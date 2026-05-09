@@ -654,22 +654,6 @@
             </main>
         </div>
 
-        <script>
-            window.vrai = true;
-            window.faux = false;
-            window.chaine = function (value) {
-                return String(value);
-            };
-            window.intervalle = function (n) {
-                return Array.from({ length: n }, function (_, i) {
-                    return i;
-                });
-            };
-            window.memyrinth = function () {
-                return '';
-            };
-        </script>
-
         <script src="bundle.js"></script>
 
         <script>
@@ -810,20 +794,6 @@
                 document.getElementById('stat-time').textContent = '0s';
             }
 
-            function stabilizeRenderedLayout() {
-                const root = document.getElementById('__ml_root');
-                if (!root) return;
-
-            const game = root.querySelector('.memyrinth');
-            const board = root.querySelector('.plateau');
-            const boardShell = root.querySelector('.plateau-shell');
-            const controls = root.querySelector('.controles');
-
-                if (game && board && boardShell && controls && controls.parentElement === board) {
-                    game.insertBefore(controls, boardShell.nextSibling);
-                }
-            }
-
             function applyLanguage() {
                 const pack = languagePack();
                 document.documentElement.lang = currentLanguage;
@@ -932,30 +902,29 @@
             }
 
             function refreshInterface() {
-                stabilizeRenderedLayout();
                 applyLanguage();
                 updateVictoryBanner();
                 updateSidebar();
             }
 
             function initializeGame() {
-            if (typeof __ml_signals === 'undefined' || typeof _engine === 'undefined') {
-                setTimeout(initializeGame, 100);
-                return;
-            }
+                if (typeof __ml_signals === 'undefined' || typeof _engine === 'undefined') {
+                    setTimeout(initializeGame, 100);
+                    return;
+                }
 
-            if (typeof __ml_render === 'function' && !window.__memyrinthWrappedRender) {
-                const originalRender = __ml_render;
-                window.__memyrinthWrappedRender = true;
-                window.__ml_render = function () {
-                    originalRender();
-                    refreshInterface();
-                };
-            }
+                if (typeof __ml_render === 'function' && !window.__memyrinthWrappedRender) {
+                    const originalRender = __ml_render;
+                    window.__memyrinthWrappedRender = true;
+                    window.__ml_render = function () {
+                        originalRender();
+                        refreshInterface();
+                    };
+                }
 
-            if (typeof __ml_render === 'function') {
-                __ml_render();
-            }
+                if (typeof __ml_render === 'function') {
+                    __ml_render();
+                }
 
                 shuffleCardsForLevel(1);
                 resetTimer();

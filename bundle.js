@@ -75,6 +75,33 @@ function streamToView(source, target) {
   });
 }
 
+function intervalle(...args) {
+  let start = 0;
+  let stop = 0;
+  let step = 1;
+  if (args.length === 1) {
+    stop = Number(args[0] ?? 0);
+  } else if (args.length >= 2) {
+    start = Number(args[0] ?? 0);
+    stop = Number(args[1] ?? 0);
+    step = Number(args[2] ?? 1);
+  }
+  if (!Number.isFinite(step) || step === 0) {
+    step = 1;
+  }
+  const result = [];
+  if (step > 0) {
+    for (let i = start; i < stop; i += step) {
+      result.push(i);
+    }
+  } else {
+    for (let i = start; i > stop; i += step) {
+      result.push(i);
+    }
+  }
+  return result;
+}
+
 const _engine = new ReactiveEngine();
 const __ml_signals = _engine.signals;
 
@@ -88,9 +115,9 @@ __ml_signals['nb_paires'] = _engine.declare('nb_paires', 8);
 
 __ml_signals['cartes'] = _engine.declare('cartes', [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
-__ml_signals['revelees'] = _engine.declare('revelees', [faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]);
+__ml_signals['revelees'] = _engine.declare('revelees', [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]);
 
-__ml_signals['correspondantes'] = _engine.declare('correspondantes', [faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]);
+__ml_signals['correspondantes'] = _engine.declare('correspondantes', [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]);
 
 __ml_signals['premier_choix'] = _engine.declare('premier_choix', (-1));
 
@@ -104,9 +131,9 @@ __ml_signals['tentatives'] = _engine.declare('tentatives', 0);
 
 __ml_signals['temps_ecoule'] = _engine.declare('temps_ecoule', 0);
 
-__ml_signals['en_verification'] = _engine.declare('en_verification', faux);
+__ml_signals['en_verification'] = _engine.declare('en_verification', false);
 
-__ml_signals['jeu_gagne'] = _engine.declare('jeu_gagne', faux);
+__ml_signals['jeu_gagne'] = _engine.declare('jeu_gagne', false);
 
 __ml_signals['angle_rotation'] = _engine.declare('angle_rotation', 0);
 
@@ -114,9 +141,9 @@ __ml_signals['paires_depuis_rotation'] = _engine.declare('paires_depuis_rotation
 
 __ml_signals['rotation_seuil'] = _engine.declare('rotation_seuil', 3);
 
-__ml_signals['rotation_active'] = _engine.declare('rotation_active', faux);
+__ml_signals['rotation_active'] = _engine.declare('rotation_active', false);
 
-__ml_signals['collision_active'] = _engine.declare('collision_active', faux);
+__ml_signals['collision_active'] = _engine.declare('collision_active', false);
 
 __ml_signals['indice_collision_1'] = _engine.declare('indice_collision_1', (-1));
 
@@ -128,18 +155,18 @@ async function clic_carte(indice) {
   if ((_engine.get('en_verification').get() || _engine.get('correspondantes').get()[indice] || _engine.get('revelees').get()[indice] || (indice >= _engine.get('nb_cartes').get()))) {
     return;
   }
-  _engine.get('revelees').setIndex(indice, vrai);
+  _engine.get('revelees').setIndex(indice, true);
   _engine.get('tentatives').set((_engine.get('tentatives').get() + 1));
   if ((_engine.get('premier_choix').get() == (-1))) {
     _engine.get('premier_choix').set(indice);
   }
   else if ((_engine.get('premier_choix').get() != indice)) {
     _engine.get('deuxieme_choix').set(indice);
-    _engine.get('en_verification').set(vrai);
+    _engine.get('en_verification').set(true);
     await new Promise((resolve) => setTimeout(resolve, 0.35 * 1000));
     if ((_engine.get('cartes').get()[_engine.get('premier_choix').get()] == _engine.get('cartes').get()[_engine.get('deuxieme_choix').get()])) {
-      _engine.get('correspondantes').setIndex(_engine.get('premier_choix').get(), vrai);
-      _engine.get('correspondantes').setIndex(_engine.get('deuxieme_choix').get(), vrai);
+      _engine.get('correspondantes').setIndex(_engine.get('premier_choix').get(), true);
+      _engine.get('correspondantes').setIndex(_engine.get('deuxieme_choix').get(), true);
       _engine.get('paires_trouvees').set((_engine.get('paires_trouvees').get() + 1));
       _engine.get('score').set((_engine.get('score').get() + 10));
       if (_engine.get('rotation_active').get()) {
@@ -163,7 +190,7 @@ async function clic_carte(indice) {
             _engine.get('nb_cartes').set(24);
             _engine.get('nb_colonnes').set(6);
             _engine.get('nb_paires').set(12);
-            _engine.get('rotation_active').set(vrai);
+            _engine.get('rotation_active').set(true);
             _engine.get('angle_rotation').set(0);
             _engine.get('paires_depuis_rotation').set(0);
             _engine.get('rotation_seuil').set(3);
@@ -182,15 +209,15 @@ async function clic_carte(indice) {
             _engine.get('rotation_seuil').set(2);
             _engine.get('cartes').set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]);
           }
-          _engine.get('revelees').set([faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]);
-          _engine.get('correspondantes').set([faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]);
+          _engine.get('revelees').set([false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]);
+          _engine.get('correspondantes').set([false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]);
           _engine.get('premier_choix').set((-1));
           _engine.get('deuxieme_choix').set((-1));
           _engine.get('paires_trouvees').set(0);
           _engine.get('besoin_melange').set((_engine.get('besoin_melange').get() + 1));
         }
         else {
-          _engine.get('jeu_gagne').set(vrai);
+          _engine.get('jeu_gagne').set(true);
         }
       }
     }
@@ -198,19 +225,19 @@ async function clic_carte(indice) {
       if ((_engine.get('niveau').get() >= 4)) {
         _engine.get('indice_collision_1').set(_engine.get('premier_choix').get());
         _engine.get('indice_collision_2').set(_engine.get('deuxieme_choix').get());
-        _engine.get('collision_active').set(vrai);
+        _engine.get('collision_active').set(true);
         await new Promise((resolve) => setTimeout(resolve, 0.25 * 1000));
-        _engine.get('collision_active').set(faux);
+        _engine.get('collision_active').set(false);
         _engine.get('indice_collision_1').set((-1));
         _engine.get('indice_collision_2').set((-1));
       }
-      _engine.get('revelees').setIndex(_engine.get('premier_choix').get(), faux);
-      _engine.get('revelees').setIndex(_engine.get('deuxieme_choix').get(), faux);
+      _engine.get('revelees').setIndex(_engine.get('premier_choix').get(), false);
+      _engine.get('revelees').setIndex(_engine.get('deuxieme_choix').get(), false);
       _engine.get('score').set((_engine.get('score').get() - 1));
     }
     _engine.get('premier_choix').set((-1));
     _engine.get('deuxieme_choix').set((-1));
-    _engine.get('en_verification').set(faux);
+    _engine.get('en_verification').set(false);
   }
 }
 
@@ -221,12 +248,12 @@ async function reinitialiser_jeu() {
   _engine.get('score').set(0);
   _engine.get('tentatives').set(0);
   _engine.get('temps_ecoule').set(0);
-  _engine.get('en_verification').set(faux);
+  _engine.get('en_verification').set(false);
   _engine.get('angle_rotation').set(0);
   _engine.get('paires_depuis_rotation').set(0);
-  _engine.get('collision_active').set(faux);
-  _engine.get('revelees').set([faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]);
-  _engine.get('correspondantes').set([faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]);
+  _engine.get('collision_active').set(false);
+  _engine.get('revelees').set([false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]);
+  _engine.get('correspondantes').set([false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]);
   _engine.get('besoin_melange').set((_engine.get('besoin_melange').get() + 1));
 }
 
@@ -282,240 +309,239 @@ function __ml_render() {
     return;
   }
   __root.innerHTML = '';
-  const __el_2000767235408 = document.createElement('div');
-  __el_2000767235408.className = 'memyrinth';
-  const __el_2000768035904 = document.createElement('div');
-  __el_2000768035904.className = 'entete';
-  const __el_2000768005664 = document.createElement('h1');
-  __el_2000768005664.appendChild(document.createTextNode(String('MEMYRINTH')));
-  __el_2000768035904.appendChild(__el_2000768005664);
-  const __el_2000767546256 = document.createElement('p');
-  __el_2000767546256.className = 'sous-titre';
+  const __el_2146336570576 = document.createElement('div');
+  __el_2146336570576.className = 'memyrinth';
+  const __el_2146337336688 = document.createElement('div');
+  __el_2146337336688.className = 'entete';
+  const __el_2146337306144 = document.createElement('h1');
+  __el_2146337306144.appendChild(document.createTextNode(String('MEMYRINTH')));
+  __el_2146337336688.appendChild(__el_2146337306144);
+  const __el_2146336847376 = document.createElement('p');
+  __el_2146336847376.className = 'sous-titre';
   if ((_engine.get('niveau').get() == 1)) {
-    __el_2000767546256.appendChild(document.createTextNode(String('Calibration Run')));
+    __el_2146336847376.appendChild(document.createTextNode(String('Calibration Run')));
   }
   else if ((_engine.get('niveau').get() == 2)) {
-    __el_2000767546256.appendChild(document.createTextNode(String('Pattern Expansion')));
+    __el_2146336847376.appendChild(document.createTextNode(String('Pattern Expansion')));
   }
   else if ((_engine.get('niveau').get() == 3)) {
-    __el_2000767546256.appendChild(document.createTextNode(String('Rotating Sector')));
+    __el_2146336847376.appendChild(document.createTextNode(String('Rotating Sector')));
   }
   else if ((_engine.get('niveau').get() == 4)) {
-    __el_2000767546256.appendChild(document.createTextNode(String('Collision Pressure')));
+    __el_2146336847376.appendChild(document.createTextNode(String('Collision Pressure')));
   }
   else {
-    __el_2000767546256.appendChild(document.createTextNode(String('Full Maze')));
+    __el_2146336847376.appendChild(document.createTextNode(String('Full Maze')));
   }
-  __el_2000768035904.appendChild(__el_2000767546256);
-  const __el_2000767546576 = document.createElement('p');
-  __el_2000767546576.className = 'hero-copy';
+  __el_2146337336688.appendChild(__el_2146336847376);
+  const __el_2146336847696 = document.createElement('p');
+  __el_2146336847696.className = 'hero-copy';
   if ((_engine.get('niveau').get() < 3)) {
-    __el_2000767546576.appendChild(document.createTextNode(String('Read the board calmly, memorize the numbers, and build momentum before the maze starts to drift.')));
+    __el_2146336847696.appendChild(document.createTextNode(String('Read the board calmly, memorize the numbers, and build momentum before the maze starts to drift.')));
   }
   else if ((_engine.get('niveau').get() < 5)) {
-    __el_2000767546576.appendChild(document.createTextNode(String('The maze now fights back. Keep your bearings as the board rotates and your errors become louder.')));
+    __el_2146336847696.appendChild(document.createTextNode(String('The maze now fights back. Keep your bearings as the board rotates and your errors become louder.')));
   }
   else {
-    __el_2000767546576.appendChild(document.createTextNode(String('This is the complete maze. Track the whole board, survive the rapid rotations, and finish the run clean.')));
+    __el_2146336847696.appendChild(document.createTextNode(String('This is the complete maze. Track the whole board, survive the rapid rotations, and finish the run clean.')));
   }
-  __el_2000768035904.appendChild(__el_2000767546576);
-  __el_2000767235408.appendChild(__el_2000768035904);
-  const __el_2000767229264 = document.createElement('div');
-  __el_2000767229264.className = 'panneau-mission';
-  const __el_2000767664752 = document.createElement('div');
-  __el_2000767664752.className = 'panneau-entete';
-  const __el_2000768036512 = document.createElement('span');
-  __el_2000768036512.className = 'panel-kicker';
-  __el_2000768036512.appendChild(document.createTextNode(String('Current Mission')));
-  __el_2000767664752.appendChild(__el_2000768036512);
-  const __el_2000767600400 = document.createElement('span');
-  __el_2000767600400.className = 'difficulty-badge';
+  __el_2146337336688.appendChild(__el_2146336847696);
+  __el_2146336570576.appendChild(__el_2146337336688);
+  const __el_2146336564432 = document.createElement('div');
+  __el_2146336564432.className = 'panneau-mission';
+  const __el_2146336965504 = document.createElement('div');
+  __el_2146336965504.className = 'panneau-entete';
+  const __el_2146337337296 = document.createElement('span');
+  __el_2146337337296.className = 'panel-kicker';
+  __el_2146337337296.appendChild(document.createTextNode(String('Current Mission')));
+  __el_2146336965504.appendChild(__el_2146337337296);
+  const __el_2146336933360 = document.createElement('span');
+  __el_2146336933360.className = 'difficulty-badge';
   if ((_engine.get('niveau').get() == 1)) {
-    __el_2000767600400.appendChild(document.createTextNode(String('Calm Start')));
+    __el_2146336933360.appendChild(document.createTextNode(String('Calm Start')));
   }
   else if ((_engine.get('niveau').get() == 2)) {
-    __el_2000767600400.appendChild(document.createTextNode(String('Pattern Build')));
+    __el_2146336933360.appendChild(document.createTextNode(String('Pattern Build')));
   }
   else if ((_engine.get('niveau').get() == 3)) {
-    __el_2000767600400.appendChild(document.createTextNode(String('Spatial Twist')));
+    __el_2146336933360.appendChild(document.createTextNode(String('Spatial Twist')));
   }
   else if ((_engine.get('niveau').get() == 4)) {
-    __el_2000767600400.appendChild(document.createTextNode(String('Pressure Spike')));
+    __el_2146336933360.appendChild(document.createTextNode(String('Pressure Spike')));
   }
   else {
-    __el_2000767600400.appendChild(document.createTextNode(String('Full Chaos')));
+    __el_2146336933360.appendChild(document.createTextNode(String('Full Chaos')));
   }
-  __el_2000767664752.appendChild(__el_2000767600400);
-  __el_2000767229264.appendChild(__el_2000767664752);
-  const __el_2000767665024 = document.createElement('h2');
-  __el_2000767665024.className = 'mission-title';
+  __el_2146336965504.appendChild(__el_2146336933360);
+  __el_2146336564432.appendChild(__el_2146336965504);
+  const __el_2146336965776 = document.createElement('h2');
+  __el_2146336965776.className = 'mission-title';
   if ((_engine.get('niveau').get() < 5)) {
-    __el_2000767665024.appendChild(document.createTextNode(String(((('Secure ' + chaine(_engine.get('nb_paires').get())) + ' pairs to reach Level ') + chaine((_engine.get('niveau').get() + 1))))));
+    __el_2146336965776.appendChild(document.createTextNode(String(((('Secure ' + String(_engine.get('nb_paires').get())) + ' pairs to reach Level ') + String((_engine.get('niveau').get() + 1))))));
   }
   else {
-    __el_2000767665024.appendChild(document.createTextNode(String((('Lock all ' + chaine(_engine.get('nb_paires').get())) + ' pairs to finish the maze'))));
+    __el_2146336965776.appendChild(document.createTextNode(String((('Lock all ' + String(_engine.get('nb_paires').get())) + ' pairs to finish the maze'))));
   }
-  __el_2000767229264.appendChild(__el_2000767665024);
-  const __el_2000767252560 = document.createElement('p');
-  __el_2000767252560.className = 'mission-copy';
+  __el_2146336564432.appendChild(__el_2146336965776);
+  const __el_2146336110672 = document.createElement('p');
+  __el_2146336110672.className = 'mission-copy';
   if ((_engine.get('niveau').get() == 1)) {
-    __el_2000767252560.appendChild(document.createTextNode(String('The first sector teaches the rhythm. Accuracy matters more than speed.')));
+    __el_2146336110672.appendChild(document.createTextNode(String('The first sector teaches the rhythm. Accuracy matters more than speed.')));
   }
   else if ((_engine.get('niveau').get() == 2)) {
-    __el_2000767252560.appendChild(document.createTextNode(String('The board grows wider here. Scan in lanes and avoid wasting flips.')));
+    __el_2146336110672.appendChild(document.createTextNode(String('The board grows wider here. Scan in lanes and avoid wasting flips.')));
   }
   else if ((_engine.get('niveau').get() == 3)) {
-    __el_2000767252560.appendChild(document.createTextNode(String((('Rotation begins after every ' + chaine(_engine.get('rotation_seuil').get())) + ' successful matches.'))));
+    __el_2146336110672.appendChild(document.createTextNode(String((('Rotation begins after every ' + String(_engine.get('rotation_seuil').get())) + ' successful matches.'))));
   }
   else if ((_engine.get('niveau').get() == 4)) {
-    __el_2000767252560.appendChild(document.createTextNode(String('Wrong guesses create collisions. Stay precise and keep your mental map stable.')));
+    __el_2146336110672.appendChild(document.createTextNode(String('Wrong guesses create collisions. Stay precise and keep your mental map stable.')));
   }
   else {
-    __el_2000767252560.appendChild(document.createTextNode(String('The final board is fully active, and the rotation accelerates. Commit to the pattern.')));
+    __el_2146336110672.appendChild(document.createTextNode(String('The final board is fully active, and the rotation accelerates. Commit to the pattern.')));
   }
-  __el_2000767229264.appendChild(__el_2000767252560);
-  const __el_2000767713360 = document.createElement('div');
-  __el_2000767713360.className = 'progression';
-  const __el_2000768097632 = document.createElement('div');
-  __el_2000768097632.className = 'progression-meta';
-  const __el_2000767252816 = document.createElement('span');
-  __el_2000767252816.appendChild(document.createTextNode(String('Progress')));
-  __el_2000768097632.appendChild(__el_2000767252816);
-  const __el_2000768097392 = document.createElement('span');
-  __el_2000768097392.appendChild(document.createTextNode(String((((chaine(_engine.get('paires_trouvees').get()) + ' / ') + chaine(_engine.get('nb_paires').get())) + ' pairs'))));
-  __el_2000768097632.appendChild(__el_2000768097392);
-  __el_2000767713360.appendChild(__el_2000768097632);
-  const __el_2000758423264 = document.createElement('div');
-  __el_2000758423264.className = 'progression-barre';
+  __el_2146336564432.appendChild(__el_2146336110672);
+  const __el_2146336998160 = document.createElement('div');
+  __el_2146336998160.className = 'progression';
+  const __el_2146337398112 = document.createElement('div');
+  __el_2146337398112.className = 'progression-meta';
+  const __el_2146336110928 = document.createElement('span');
+  __el_2146336110928.appendChild(document.createTextNode(String('Progress')));
+  __el_2146337398112.appendChild(__el_2146336110928);
+  const __el_2146337397872 = document.createElement('span');
+  __el_2146337397872.appendChild(document.createTextNode(String((((String(_engine.get('paires_trouvees').get()) + ' / ') + String(_engine.get('nb_paires').get())) + ' pairs'))));
+  __el_2146337398112.appendChild(__el_2146337397872);
+  __el_2146336998160.appendChild(__el_2146337398112);
+  const __el_2146336997984 = document.createElement('div');
+  __el_2146336997984.className = 'progression-barre';
   if ((_engine.get('paires_trouvees').get() == _engine.get('nb_paires').get())) {
-    const __el_2000768078992 = document.createElement('div');
-    __el_2000768078992.className = 'progression-remplissage progress-100';
-    __el_2000768078992.appendChild(document.createTextNode(String('')));
-    __el_2000758423264.appendChild(__el_2000768078992);
+    const __el_2146337379664 = document.createElement('div');
+    __el_2146337379664.className = 'progression-remplissage progress-100';
+    __el_2146337379664.appendChild(document.createTextNode(String('')));
+    __el_2146336997984.appendChild(__el_2146337379664);
   }
   else if ((_engine.get('paires_trouvees').get() >= (_engine.get('nb_paires').get() / 2))) {
-    const __el_2000756713168 = document.createElement('div');
-    __el_2000756713168.className = 'progression-remplissage progress-50';
-    __el_2000756713168.appendChild(document.createTextNode(String('')));
-    __el_2000758423264.appendChild(__el_2000756713168);
+    const __el_2146325081104 = document.createElement('div');
+    __el_2146325081104.className = 'progression-remplissage progress-50';
+    __el_2146325081104.appendChild(document.createTextNode(String('')));
+    __el_2146336997984.appendChild(__el_2146325081104);
   }
   else if ((_engine.get('paires_trouvees').get() >= (_engine.get('nb_paires').get() / 4))) {
-    const __el_2000756713392 = document.createElement('div');
-    __el_2000756713392.className = 'progression-remplissage progress-25';
-    __el_2000756713392.appendChild(document.createTextNode(String('')));
-    __el_2000758423264.appendChild(__el_2000756713392);
+    const __el_2146325081328 = document.createElement('div');
+    __el_2146325081328.className = 'progression-remplissage progress-25';
+    __el_2146325081328.appendChild(document.createTextNode(String('')));
+    __el_2146336997984.appendChild(__el_2146325081328);
   }
   else if ((_engine.get('paires_trouvees').get() > 0)) {
-    const __el_2000758498320 = document.createElement('div');
-    __el_2000758498320.className = 'progression-remplissage progress-10';
-    __el_2000758498320.appendChild(document.createTextNode(String('')));
-    __el_2000758423264.appendChild(__el_2000758498320);
+    const __el_2146335893744 = document.createElement('div');
+    __el_2146335893744.className = 'progression-remplissage progress-10';
+    __el_2146335893744.appendChild(document.createTextNode(String('')));
+    __el_2146336997984.appendChild(__el_2146335893744);
   }
   else {
-    const __el_2000768079184 = document.createElement('div');
-    __el_2000768079184.className = 'progression-remplissage progress-0';
-    __el_2000768079184.appendChild(document.createTextNode(String('')));
-    __el_2000758423264.appendChild(__el_2000768079184);
+    const __el_2146337379856 = document.createElement('div');
+    __el_2146337379856.className = 'progression-remplissage progress-0';
+    __el_2146337379856.appendChild(document.createTextNode(String('')));
+    __el_2146336997984.appendChild(__el_2146337379856);
   }
-  __el_2000767713360.appendChild(__el_2000758423264);
-  __el_2000767229264.appendChild(__el_2000767713360);
-  const __el_2000757962176 = document.createElement('div');
-  __el_2000757962176.className = 'mechanic-chip';
-  const __el_2000767171984 = document.createElement('strong');
-  __el_2000767171984.appendChild(document.createTextNode(String('Mechanic')));
-  __el_2000757962176.appendChild(__el_2000767171984);
-  const __el_2000767172144 = document.createElement('span');
+  __el_2146336998160.appendChild(__el_2146336997984);
+  __el_2146336564432.appendChild(__el_2146336998160);
+  const __el_2146335419152 = document.createElement('div');
+  __el_2146335419152.className = 'mechanic-chip';
+  const __el_2146337014160 = document.createElement('strong');
+  __el_2146337014160.appendChild(document.createTextNode(String('Mechanic')));
+  __el_2146335419152.appendChild(__el_2146337014160);
+  const __el_2146337014320 = document.createElement('span');
   if ((_engine.get('niveau').get() < 3)) {
-    __el_2000767172144.appendChild(document.createTextNode(String('Classic memory board')));
+    __el_2146337014320.appendChild(document.createTextNode(String('Classic memory board')));
   }
   else if ((_engine.get('niveau').get() == 3)) {
-    __el_2000767172144.appendChild(document.createTextNode(String((('Rotate every ' + chaine(_engine.get('rotation_seuil').get())) + ' matches'))));
+    __el_2146337014320.appendChild(document.createTextNode(String((('Rotate every ' + String(_engine.get('rotation_seuil').get())) + ' matches'))));
   }
   else if ((_engine.get('niveau').get() == 4)) {
-    __el_2000767172144.appendChild(document.createTextNode(String('Rotation plus collision effects')));
+    __el_2146337014320.appendChild(document.createTextNode(String('Rotation plus collision effects')));
   }
   else {
-    __el_2000767172144.appendChild(document.createTextNode(String((('Fast rotation every ' + chaine(_engine.get('rotation_seuil').get())) + ' matches'))));
+    __el_2146337014320.appendChild(document.createTextNode(String((('Fast rotation every ' + String(_engine.get('rotation_seuil').get())) + ' matches'))));
   }
-  __el_2000757962176.appendChild(__el_2000767172144);
-  __el_2000767229264.appendChild(__el_2000757962176);
-  __el_2000767235408.appendChild(__el_2000767229264);
-  const __el_2000767230288 = document.createElement('div');
-  __el_2000767230288.className = 'status';
-  const __el_2000767230160 = document.createElement('p');
+  __el_2146335419152.appendChild(__el_2146337014320);
+  __el_2146336564432.appendChild(__el_2146335419152);
+  __el_2146336570576.appendChild(__el_2146336564432);
+  const __el_2146336565456 = document.createElement('div');
+  __el_2146336565456.className = 'status';
+  const __el_2146336565328 = document.createElement('p');
   if (_engine.get('jeu_gagne').get()) {
-    __el_2000767230160.appendChild(document.createTextNode(String('Run complete. You mastered the maze.')));
+    __el_2146336565328.appendChild(document.createTextNode(String('Run complete. You mastered the maze.')));
   }
   else if (_engine.get('en_verification').get()) {
-    __el_2000767230160.appendChild(document.createTextNode(String('Hold the pattern. Verifying the pair...')));
+    __el_2146336565328.appendChild(document.createTextNode(String('Hold the pattern. Verifying the pair...')));
   }
   else if ((_engine.get('paires_trouvees').get() == _engine.get('nb_paires').get())) {
     if ((_engine.get('niveau').get() < 5)) {
-      __el_2000767230160.appendChild(document.createTextNode(String(('Sector cleared. Preparing Level ' + chaine((_engine.get('niveau').get() + 1))))));
+      __el_2146336565328.appendChild(document.createTextNode(String(('Sector cleared. Preparing Level ' + String((_engine.get('niveau').get() + 1))))));
     }
     else {
-      __el_2000767230160.appendChild(document.createTextNode(String('Pick two cards and build a clean memory chain.')));
+      __el_2146336565328.appendChild(document.createTextNode(String('Pick two cards and build a clean memory chain.')));
     }
   }
   else if (_engine.get('collision_active').get()) {
-    __el_2000767230160.appendChild(document.createTextNode(String('Bad read. Re-center and track the revealed numbers.')));
+    __el_2146336565328.appendChild(document.createTextNode(String('Bad read. Re-center and track the revealed numbers.')));
   }
   else if (_engine.get('rotation_active').get()) {
-    __el_2000767230160.appendChild(document.createTextNode(String((('Board rotates after ' + chaine((_engine.get('rotation_seuil').get() - _engine.get('paires_depuis_rotation').get()))) + ' more matches.'))));
+    __el_2146336565328.appendChild(document.createTextNode(String((('Board rotates after ' + String((_engine.get('rotation_seuil').get() - _engine.get('paires_depuis_rotation').get()))) + ' more matches.'))));
   }
   else {
-    __el_2000767230160.appendChild(document.createTextNode(String('Pick two cards and build a clean memory chain.')));
+    __el_2146336565328.appendChild(document.createTextNode(String('Pick two cards and build a clean memory chain.')));
   }
-  __el_2000767230288.appendChild(__el_2000767230160);
-  __el_2000767235408.appendChild(__el_2000767230288);
-  const __el_2000767235280 = document.createElement('div');
-  __el_2000767235280.className = 'plateau-shell';
-  const __el_2000767235152 = document.createElement('div');
-  __el_2000767235152.className = 'plateau';
-  __el_2000767235152.setAttribute('style', (((('grid-template-columns: repeat(' + chaine(_engine.get('nb_colonnes').get())) + ', minmax(0, 1fr)); transform: rotate(') + chaine(_engine.get('angle_rotation').get())) + 'deg);'));
+  __el_2146336565456.appendChild(__el_2146336565328);
+  __el_2146336570576.appendChild(__el_2146336565456);
+  const __el_2146336570448 = document.createElement('div');
+  __el_2146336570448.className = 'plateau-shell';
+  const __el_2146336570320 = document.createElement('div');
+  __el_2146336570320.className = 'plateau';
+  __el_2146336570320.setAttribute('style', (((('grid-template-columns: repeat(' + String(_engine.get('nb_colonnes').get())) + ', minmax(0, 1fr)); transform: rotate(') + String(_engine.get('angle_rotation').get())) + 'deg);'));
   for (const i of intervalle(_engine.get('nb_cartes').get())) {
-    const __el_2000767234256 = document.createElement('button');
-    __el_2000767234256.className = 'carte';
-    if (_engine.get('correspondantes').get()[i]) { __el_2000767234256.classList.add('matched'); }
-    if (_engine.get('revelees').get()[i]) { __el_2000767234256.classList.add('revealed'); }
-    if ((_engine.get('collision_active').get() || ((i == _engine.get('indice_collision_1').get()) || (i == _engine.get('indice_collision_2').get())))) { __el_2000767234256.classList.add('collision'); }
-    __el_2000767234256.disabled = (_engine.get('correspondantes').get()[i] || _engine.get('en_verification').get());
-    __el_2000767234256.addEventListener('click', async () => { clic_carte(i); });
+    const __el_2146336569424 = document.createElement('button');
+    __el_2146336569424.className = 'carte';
+    if (_engine.get('correspondantes').get()[i]) { __el_2146336569424.classList.add('matched'); }
+    if (_engine.get('revelees').get()[i]) { __el_2146336569424.classList.add('revealed'); }
+    if ((_engine.get('collision_active').get() || ((i == _engine.get('indice_collision_1').get()) || (i == _engine.get('indice_collision_2').get())))) { __el_2146336569424.classList.add('collision'); }
+    __el_2146336569424.disabled = (_engine.get('correspondantes').get()[i] || _engine.get('en_verification').get());
+    __el_2146336569424.addEventListener('click', async () => { clic_carte(i); });
     if (_engine.get('correspondantes').get()[i]) {
-      const __el_2000767233360 = document.createElement('span');
-      __el_2000767233360.className = 'carte-texte';
-      __el_2000767233360.setAttribute('style', (('transform: rotate(' + chaine((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
-      __el_2000767233360.appendChild(document.createTextNode(String('OK')));
-      __el_2000767234256.appendChild(__el_2000767233360);
+      const __el_2146336568528 = document.createElement('span');
+      __el_2146336568528.className = 'carte-texte';
+      __el_2146336568528.setAttribute('style', (('transform: rotate(' + String((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
+      __el_2146336568528.appendChild(document.createTextNode(String('OK')));
+      __el_2146336569424.appendChild(__el_2146336568528);
     }
     else if (_engine.get('revelees').get()[i]) {
-      const __el_2000767232464 = document.createElement('span');
-      __el_2000767232464.className = 'carte-texte';
-      __el_2000767232464.setAttribute('style', (('transform: rotate(' + chaine((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
-      __el_2000767232464.appendChild(document.createTextNode(String(chaine(_engine.get('cartes').get()[i]))));
-      __el_2000767234256.appendChild(__el_2000767232464);
+      const __el_2146336567632 = document.createElement('span');
+      __el_2146336567632.className = 'carte-texte';
+      __el_2146336567632.setAttribute('style', (('transform: rotate(' + String((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
+      __el_2146336567632.appendChild(document.createTextNode(String(String(_engine.get('cartes').get()[i]))));
+      __el_2146336569424.appendChild(__el_2146336567632);
     }
     else {
-      const __el_2000767234128 = document.createElement('span');
-      __el_2000767234128.className = 'carte-texte';
-      __el_2000767234128.setAttribute('style', (('transform: rotate(' + chaine((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
-      __el_2000767234128.appendChild(document.createTextNode(String('?')));
-      __el_2000767234256.appendChild(__el_2000767234128);
+      const __el_2146336569296 = document.createElement('span');
+      __el_2146336569296.className = 'carte-texte';
+      __el_2146336569296.setAttribute('style', (('transform: rotate(' + String((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
+      __el_2146336569296.appendChild(document.createTextNode(String('?')));
+      __el_2146336569424.appendChild(__el_2146336569296);
     }
-    __el_2000767235152.appendChild(__el_2000767234256);
+    __el_2146336570320.appendChild(__el_2146336569424);
   }
-  const __el_2000767234896 = document.createElement('div');
-  __el_2000767234896.className = 'controles';
-  const __el_2000767234768 = document.createElement('button');
-  __el_2000767234768.className = 'reset-btn';
-  __el_2000767234768.addEventListener('click', async () => { reinitialiser_jeu(); });
-  __el_2000767234768.appendChild(document.createTextNode(String('Restart Run')));
-  __el_2000767234896.appendChild(__el_2000767234768);
-  __el_2000767235152.appendChild(__el_2000767234896);
-  __el_2000767235152.appendChild(document.createTextNode(String(memyrinth())));
-  __el_2000767235280.appendChild(__el_2000767235152);
-  __el_2000767235408.appendChild(__el_2000767235280);
-  __root.appendChild(__el_2000767235408);
+  __el_2146336570448.appendChild(__el_2146336570320);
+  __el_2146336570576.appendChild(__el_2146336570448);
+  const __el_2146336570064 = document.createElement('div');
+  __el_2146336570064.className = 'controles';
+  const __el_2146336569936 = document.createElement('button');
+  __el_2146336569936.className = 'reset-btn';
+  __el_2146336569936.addEventListener('click', async () => { reinitialiser_jeu(); });
+  __el_2146336569936.appendChild(document.createTextNode(String('Restart Run')));
+  __el_2146336570064.appendChild(__el_2146336569936);
+  __el_2146336570576.appendChild(__el_2146336570064);
+  __root.appendChild(__el_2146336570576);
 }
 
 if (typeof __ml_render === 'function') {
