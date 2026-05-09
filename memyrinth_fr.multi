@@ -1,0 +1,143 @@
+importer asyncio
+
+déf memyrinth() utilise ui:
+    observer var niveau = 1
+    observer var nb_cartes = 16
+    observer var nb_colonnes = 4
+    observer var nb_paires = 8
+    observer var cartes = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    observer var revelees = [faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]
+    observer var correspondantes = [faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]
+    observer var premier_choix = -1
+    observer var deuxieme_choix = -1
+    observer var paires_trouvees = 0
+    observer var score = 0
+    observer var tentatives = 0
+    observer var en_verification = faux
+    observer var jeu_gagne = faux
+    observer var angle_rotation = 0
+    observer var paires_depuis_rotation = 0
+    observer var rotation_seuil = 3
+    observer var rotation_active = faux
+    observer var collision_active = faux
+    observer var indice_collision_1 = -1
+    observer var indice_collision_2 = -1
+    observer var besoin_melange = 0
+
+    asynchrone déf clic_carte(indice):
+        si en_verification ou correspondantes[indice] ou revelees[indice] ou indice >= nb_cartes:
+            retour
+        revelees[indice] = vrai
+        tentatives = tentatives + 1
+        si premier_choix == -1:
+            premier_choix = indice
+        sinon si premier_choix != indice:
+            deuxieme_choix = indice
+            en_verification = vrai
+            attendre asyncio.sleep(1.0)
+            si cartes[premier_choix] == cartes[deuxieme_choix]:
+                correspondantes[premier_choix] = vrai
+                correspondantes[deuxieme_choix] = vrai
+                paires_trouvees = paires_trouvees + 1
+                score = score + 10
+                si rotation_active:
+                    paires_depuis_rotation = paires_depuis_rotation + 1
+                    si paires_depuis_rotation >= rotation_seuil:
+                        angle_rotation = (angle_rotation + 90) % 360
+                        paires_depuis_rotation = 0
+                si paires_trouvees == nb_paires:
+                    si niveau < 5:
+                        attendre asyncio.sleep(0.5)
+                        niveau = niveau + 1
+                        si niveau == 2:
+                            nb_cartes = 20
+                            nb_colonnes = 5
+                            nb_paires = 10
+                            cartes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                        sinon si niveau == 3:
+                            nb_cartes = 24
+                            nb_colonnes = 6
+                            nb_paires = 12
+                            rotation_active = vrai
+                            angle_rotation = 0
+                            paires_depuis_rotation = 0
+                            rotation_seuil = 3
+                            cartes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                        sinon si niveau == 4:
+                            nb_cartes = 30
+                            nb_colonnes = 6
+                            nb_paires = 15
+                            cartes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 0, 0, 0, 0, 0]
+                        sinon si niveau == 5:
+                            nb_cartes = 36
+                            nb_colonnes = 6
+                            nb_paires = 18
+                            rotation_seuil = 2
+                            cartes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+                        revelees = [faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]
+                        correspondantes = [faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]
+                        premier_choix = -1
+                        deuxieme_choix = -1
+                        paires_trouvees = 0
+                        besoin_melange = besoin_melange + 1
+                    sinon:
+                        jeu_gagne = vrai
+            sinon:
+                si niveau >= 4:
+                    indice_collision_1 = premier_choix
+                    indice_collision_2 = deuxieme_choix
+                    collision_active = vrai
+                    attendre asyncio.sleep(0.8)
+                    collision_active = faux
+                    indice_collision_1 = -1
+                    indice_collision_2 = -1
+                revelees[premier_choix] = faux
+                revelees[deuxieme_choix] = faux
+                score = score - 1
+            premier_choix = -1
+            deuxieme_choix = -1
+            en_verification = faux
+
+    asynchrone déf reinitialiser_jeu():
+        premier_choix = -1
+        deuxieme_choix = -1
+        paires_trouvees = 0
+        score = 0
+        tentatives = 0
+        en_verification = faux
+        angle_rotation = 0
+        paires_depuis_rotation = 0
+        collision_active = faux
+        revelees = [faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]
+        correspondantes = [faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux, faux]
+        besoin_melange = besoin_melange + 1
+
+    render:
+        div class="memyrinth":
+            div class="entete":
+                h1: "MEMYRINTH"
+
+            div class="tableau-de-bord":
+                span: "L" + chaine(niveau) + "/5 S" + chaine(score) + " P" + chaine(paires_trouvees) + "/" + chaine(nb_paires) + " T" + chaine(tentatives)
+
+            div class="plateau":
+                pour i dans intervalle(36):
+                    button class="carte"
+                            class:matched=(correspondantes[i])
+                            class:revealed=(revelees[i])
+                            disabled=(correspondantes[i] ou en_verification ou i >= nb_cartes)
+                            onclick=clic_carte(i):
+                        si correspondantes[i]:
+                            "✓"
+                        sinon si revelees[i]:
+                            chaine(cartes[i])
+                        sinon:
+                            "?"
+
+            div class="status":
+                p si jeu_gagne: "Won!"
+                p si non jeu_gagne et paires_trouvees == nb_paires et niveau < 5: "Next Level!"
+
+            button class="reset-btn" onclick=reinitialiser_jeu(): "Restart"
+
+memyrinth()

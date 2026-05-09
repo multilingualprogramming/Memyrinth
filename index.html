@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEMYRINTH - Shifting Labyrinth Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #050510 0%, #0a0a1a 50%, #050510 100%);
+            color: #e0e0ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        /* Header & Controls */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #7700ff;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+            letter-spacing: 3px;
+            color: #00ffff;
+        }
+
+        .lang-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lang-btn:hover {
+            background: #00ffff;
+            color: #050510;
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        .lang-btn.active {
+            background: #7700ff;
+            border-color: #7700ff;
+            color: white;
+            box-shadow: 0 0 20px #7700ff;
+        }
+
+        /* Game Board */
+        #__ml_root {
+            width: 100%;
+        }
+
+        .memyrinth {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .entete {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sous-titre {
+            color: #00ff88;
+            font-size: 0.9em;
+            margin-top: 5px;
+            text-shadow: 0 0 10px #00ff88;
+            letter-spacing: 2px;
+        }
+
+        /* Dashboard Stats */
+        .tableau-de-bord {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            background: rgba(119, 0, 255, 0.1);
+            border: 2px solid #7700ff;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat .label {
+            font-size: 0.8em;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat .valeur {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        /* Game Board Grid */
+        .plateau {
+            display: grid;
+            gap: 8px;
+            padding: 20px;
+            background: rgba(10, 10, 26, 0.8);
+            border: 3px solid #ff00ff;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+        }
+
+        /* Grid column variants */
+        .plateau.grille-4 {
+            grid-template-columns: repeat(4, 1fr);
+            max-width: 500px;
+        }
+
+        .plateau.grille-5 {
+            grid-template-columns: repeat(5, 1fr);
+            max-width: 600px;
+        }
+
+        .plateau.grille-6 {
+            grid-template-columns: repeat(6, 1fr);
+            max-width: 700px;
+        }
+
+        /* Rotation animations */
+        .plateau.rotation-90 {
+            transform: perspective(1000px) rotateZ(90deg);
+        }
+
+        .plateau.rotation-180 {
+            transform: perspective(1000px) rotateZ(180deg);
+        }
+
+        .plateau.rotation-270 {
+            transform: perspective(1000px) rotateZ(270deg);
+        }
+
+        /* Cards */
+        .carte {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #1a1a3a 0%, #2d0066 100%);
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            color: #00ffff;
+            font-size: 1.8em;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carte:hover:not(:disabled):not(.inactive) {
+            transform: scale(1.05) translateZ(0);
+            box-shadow: 0 0 20px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.2);
+            border-color: #00ff88;
+        }
+
+        .carte:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .carte.inactive {
+            display: none;
+        }
+
+        .carte.revelee {
+            background: linear-gradient(135deg, #00ffff 0%, #00ff88 100%);
+            color: #050510;
+            border-color: #00ff88;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 20px rgba(0, 255, 136, 0.3);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .carte.correspondante {
+            background: linear-gradient(135deg, #00ff88 0%, #00ffaa 100%);
+            color: #050510;
+            border-color: #00ff88;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.8), inset 0 0 20px rgba(0, 255, 136, 0.5);
+            animation: pulse-match 0.6s ease-out;
+        }
+
+        @keyframes pulse-match {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .carte.collision {
+            animation: collision-effect 0.8s ease-out;
+        }
+
+        @keyframes collision-effect {
+            0%, 100% {
+                border-color: #ff0044;
+                background: linear-gradient(135deg, #1a1a3a 0%, #2d0066 100%);
+                box-shadow: 0 0 20px #ff0044;
+            }
+            50% {
+                border-color: #ff00ff;
+                background: linear-gradient(135deg, #ff0044 0%, #ff00ff 100%);
+                box-shadow: 0 0 40px #ff0044, inset 0 0 20px rgba(255, 0, 68, 0.5);
+            }
+        }
+
+        /* Game State Messages */
+        .etat {
+            text-align: center;
+            margin-top: 20px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .etat p {
+            font-size: 1.1em;
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+            letter-spacing: 1px;
+        }
+
+        .etat p:first-child {
+            animation: glow-pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% {
+                text-shadow: 0 0 15px #ff00ff;
+            }
+            50% {
+                text-shadow: 0 0 30px #ff00ff, 0 0 50px #ff00ff;
+            }
+        }
+
+        /* Controls */
+        .controles {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-reset {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #7700ff 0%, #ff00ff 100%);
+            border: 2px solid #ff00ff;
+            color: white;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+
+        .btn-reset:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.6);
+            background: linear-gradient(135deg, #ff00ff 0%, #7700ff 100%);
+        }
+
+        .btn-reset:active {
+            transform: scale(0.98);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .plateau.grille-4 {
+                max-width: 100%;
+            }
+
+            .plateau.grille-5 {
+                max-width: 100%;
+            }
+
+            .plateau.grille-6 {
+                max-width: 100%;
+            }
+
+            .tableau-de-bord {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Instruction overlay */
+        .instructions {
+            background: rgba(119, 0, 255, 0.15);
+            border: 2px solid #7700ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .instructions p {
+            margin: 5px 0;
+            color: #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="title">MEMYRINTH</h1>
+            <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en" onclick="changeLanguage('en')">EN</button>
+                <button class="lang-btn" data-lang="fr" onclick="changeLanguage('fr')">FR</button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <p id="instr-text">Match pairs of numbers before the labyrinth shifts!</p>
+        </div>
+
+        <!-- Mount point for reactive game -->
+        <div id="__ml_root"></div>
+    </div>
+
+    <!-- Game logic bundle from multilingual -->
+    <script src="bundle.js"></script>
+
+    <script>
+        // i18n Translations
+        const i18n = {
+            en: {
+                title: 'MEMYRINTH',
+                subtitle: 'Navigate a shifting labyrinth',
+                instr: 'Match pairs of numbers before the labyrinth shifts!',
+                level: 'Level',
+                score: 'Score',
+                pairs: 'Pairs',
+                tries: 'Tries',
+                restart: 'Restart',
+                won: '🎉 You have mastered the Labyrinth! 🎉',
+                nextLevel: 'Next level unlocked...'
+            },
+            fr: {
+                title: 'MEMYRINTH',
+                subtitle: 'Naviguez dans un labyrinthe mouvant',
+                instr: 'Trouvez les paires avant que le labyrinthe se décale!',
+                level: 'Niveau',
+                score: 'Score',
+                pairs: 'Paires',
+                tries: 'Tentatives',
+                restart: 'Recommencer',
+                won: '🎉 Vous avez maîtrisé le Labyrinthe! 🎉',
+                nextLevel: 'Niveau suivant débloqué...'
+            }
+        };
+
+        let currentLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
+
+        // Change language
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            applyLanguage();
+        }
+
+        // Apply language to UI
+        function applyLanguage() {
+            const texts = i18n[currentLang];
+            document.getElementById('title').textContent = texts.title;
+            document.getElementById('instr-text').textContent = texts.instr;
+        }
+
+        // Initialize language on load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === currentLang);
+            });
+            applyLanguage();
+            initializeGame();
+        });
+
+        // Shuffle array (Fisher-Yates)
+        function shuffleArray(arr) {
+            const result = [...arr];
+            for (let i = result.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+            return result;
+        }
+
+        // Get card array for current level
+        function getCardsForLevel(level) {
+            const levels = {
+                1: [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8],
+                2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                3: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                4: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                5: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+            };
+            return levels[level] || levels[1];
+        }
+
+        // Initialize and shuffle game
+        function initializeGame() {
+            // Wait for bundle.js to define __ml_signals and _engine
+            if (typeof __ml_signals === 'undefined' || typeof _engine === 'undefined') {
+                setTimeout(initializeGame, 100);
+                return;
+            }
+
+            // Shuffle the initial cards
+            shuffleCardsForLevel(1);
+
+            // Watch for level changes (besoin_melange signal)
+            if (_engine && typeof _engine.on_change === 'function') {
+                _engine.on_change('besoin_melange')(() => {
+                    const niveau = __ml_signals['niveau'].get();
+                    shuffleCardsForLevel(niveau);
+                });
+            }
+        }
+
+        // Shuffle cards for a specific level
+        function shuffleCardsForLevel(level) {
+            if (typeof __ml_signals === 'undefined') return;
+
+            const cardsArray = getCardsForLevel(level);
+            const shuffled = shuffleArray(cardsArray);
+
+            // Pad with zeros to 36 slots
+            const fullArray = [...shuffled, ...Array(36 - shuffled.length).fill(0)];
+
+            // Update the reactive signal
+            for (let i = 0; i < 36; i++) {
+                if (__ml_signals['cartes']) {
+                    __ml_signals['cartes'].setIndex(i, fullArray[i]);
+                }
+            }
+
+            // Trigger re-render
+            if (typeof __ml_render === 'function') {
+                __ml_render();
+            }
+        }
+    </script>
+</body>
+</html>
