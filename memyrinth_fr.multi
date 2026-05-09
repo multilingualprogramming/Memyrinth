@@ -13,6 +13,7 @@ déf memyrinth() utilise ui:
     observer var paires_trouvees = 0
     observer var score = 0
     observer var tentatives = 0
+    observer var temps_ecoule = 0
     observer var en_verification = faux
     observer var jeu_gagne = faux
     observer var angle_rotation = 0
@@ -34,7 +35,7 @@ déf memyrinth() utilise ui:
         sinon si premier_choix != indice:
             deuxieme_choix = indice
             en_verification = vrai
-            attendre asyncio.sleep(1.0)
+            attendre asyncio.sleep(0.35)
             si cartes[premier_choix] == cartes[deuxieme_choix]:
                 correspondantes[premier_choix] = vrai
                 correspondantes[deuxieme_choix] = vrai
@@ -47,7 +48,7 @@ déf memyrinth() utilise ui:
                         paires_depuis_rotation = 0
                 si paires_trouvees == nb_paires:
                     si niveau < 5:
-                        attendre asyncio.sleep(0.5)
+                        attendre asyncio.sleep(0.2)
                         niveau = niveau + 1
                         si niveau == 2:
                             nb_cartes = 20
@@ -87,7 +88,7 @@ déf memyrinth() utilise ui:
                     indice_collision_1 = premier_choix
                     indice_collision_2 = deuxieme_choix
                     collision_active = vrai
-                    attendre asyncio.sleep(0.8)
+                    attendre asyncio.sleep(0.25)
                     collision_active = faux
                     indice_collision_1 = -1
                     indice_collision_2 = -1
@@ -104,6 +105,7 @@ déf memyrinth() utilise ui:
         paires_trouvees = 0
         score = 0
         tentatives = 0
+        temps_ecoule = 0
         en_verification = faux
         angle_rotation = 0
         paires_depuis_rotation = 0
@@ -116,28 +118,117 @@ déf memyrinth() utilise ui:
         div class="memyrinth":
             div class="entete":
                 h1: "MEMYRINTH"
+                p class="sous-titre":
+                    si niveau == 1:
+                        "Calibration Run"
+                    sinon si niveau == 2:
+                        "Pattern Expansion"
+                    sinon si niveau == 3:
+                        "Rotating Sector"
+                    sinon si niveau == 4:
+                        "Collision Pressure"
+                    sinon:
+                        "Full Maze"
+                p class="hero-copy":
+                    si niveau < 3:
+                        "Read the board calmly, memorize the numbers, and build momentum before the maze starts to drift."
+                    sinon si niveau < 5:
+                        "The maze now fights back. Keep your bearings as the board rotates and your errors become louder."
+                    sinon:
+                        "This is the complete maze. Track the whole board, survive the rapid rotations, and finish the run clean."
 
-            div class="tableau-de-bord":
-                span: "L" + chaine(niveau) + "/5 S" + chaine(score) + " P" + chaine(paires_trouvees) + "/" + chaine(nb_paires) + " T" + chaine(tentatives)
-
-            div class="plateau":
-                pour i dans intervalle(36):
-                    button class="carte"
-                            class:matched=(correspondantes[i])
-                            class:revealed=(revelees[i])
-                            disabled=(correspondantes[i] ou en_verification ou i >= nb_cartes)
-                            onclick=clic_carte(i):
-                        si correspondantes[i]:
-                            "✓"
-                        sinon si revelees[i]:
-                            chaine(cartes[i])
+            div class="panneau-mission":
+                div class="panneau-entete":
+                    span class="panel-kicker": "Current Mission"
+                    span class="difficulty-badge":
+                        si niveau == 1:
+                            "Calm Start"
+                        sinon si niveau == 2:
+                            "Pattern Build"
+                        sinon si niveau == 3:
+                            "Spatial Twist"
+                        sinon si niveau == 4:
+                            "Pressure Spike"
                         sinon:
-                            "?"
+                            "Full Chaos"
+                h2 class="mission-title":
+                    si niveau < 5:
+                        "Secure " + chaine(nb_paires) + " pairs to reach Level " + chaine(niveau + 1)
+                    sinon:
+                        "Lock all " + chaine(nb_paires) + " pairs to finish the maze"
+                p class="mission-copy":
+                    si niveau == 1:
+                        "The first sector teaches the rhythm. Accuracy matters more than speed."
+                    sinon si niveau == 2:
+                        "The board grows wider here. Scan in lanes and avoid wasting flips."
+                    sinon si niveau == 3:
+                        "Rotation begins after every " + chaine(rotation_seuil) + " successful matches."
+                    sinon si niveau == 4:
+                        "Wrong guesses create collisions. Stay precise and keep your mental map stable."
+                    sinon:
+                        "The final board is fully active, and the rotation accelerates. Commit to the pattern."
+                div class="progression":
+                    div class="progression-meta":
+                        span: "Progress"
+                        span: chaine(paires_trouvees) + " / " + chaine(nb_paires) + " pairs"
+                    div class="progression-barre":
+                        si paires_trouvees == nb_paires:
+                            div class="progression-remplissage progress-100": ""
+                        sinon si paires_trouvees >= nb_paires / 2:
+                            div class="progression-remplissage progress-50": ""
+                        sinon si paires_trouvees >= nb_paires / 4:
+                            div class="progression-remplissage progress-25": ""
+                        sinon si paires_trouvees > 0:
+                            div class="progression-remplissage progress-10": ""
+                        sinon:
+                            div class="progression-remplissage progress-0": ""
+                div class="mechanic-chip":
+                    strong: "Mechanic"
+                    span:
+                        si niveau < 3:
+                            "Classic memory board"
+                        sinon si niveau == 3:
+                            "Rotate every " + chaine(rotation_seuil) + " matches"
+                        sinon si niveau == 4:
+                            "Rotation plus collision effects"
+                        sinon:
+                            "Fast rotation every " + chaine(rotation_seuil) + " matches"
 
             div class="status":
-                p si jeu_gagne: "Won!"
-                p si non jeu_gagne et paires_trouvees == nb_paires et niveau < 5: "Next Level!"
+                p:
+                    si jeu_gagne:
+                        "Run complete. You mastered the maze."
+                    sinon si en_verification:
+                        "Hold the pattern. Verifying the pair..."
+                    sinon si paires_trouvees == nb_paires:
+                        si niveau < 5:
+                            "Sector cleared. Preparing Level " + chaine(niveau + 1)
+                        sinon:
+                            "Pick two cards and build a clean memory chain."
+                    sinon si collision_active:
+                        "Bad read. Re-center and track the revealed numbers."
+                    sinon si rotation_active:
+                        "Board rotates after " + chaine(rotation_seuil - paires_depuis_rotation) + " more matches."
+                    sinon:
+                        "Pick two cards and build a clean memory chain."
 
-            button class="reset-btn" onclick=reinitialiser_jeu(): "Restart"
+            div class="plateau-shell":
+                div class="plateau" style=("grid-template-columns: repeat(" + chaine(nb_colonnes) + ", minmax(0, 1fr)); transform: rotate(" + chaine(angle_rotation) + "deg);"):
+                    pour i dans intervalle(nb_cartes):
+                        button class="carte"
+                                class:matched=(correspondantes[i])
+                                class:revealed=(revelees[i])
+                                class:collision=(collision_active et (i == indice_collision_1 ou i == indice_collision_2))
+                                disabled=(correspondantes[i] ou en_verification)
+                                onclick=clic_carte(i):
+                            si correspondantes[i]:
+                                "OK"
+                            sinon si revelees[i]:
+                                chaine(cartes[i])
+                            sinon:
+                                "?"
+
+            div class="controles":
+                button class="reset-btn" onclick=reinitialiser_jeu(): "Restart Run"
 
 memyrinth()
