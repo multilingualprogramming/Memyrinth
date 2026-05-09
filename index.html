@@ -339,11 +339,32 @@
                 text-align: center;
             }
 
-            .status p {
-                color: var(--text);
-                font-size: 0.96rem;
-                line-height: 1.5;
-            }
+        .status p {
+            color: var(--text);
+            font-size: 0.96rem;
+            line-height: 1.5;
+        }
+
+        .victory-banner {
+            width: min(100%, 920px);
+            padding: 18px 20px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(105, 240, 168, 0.18), rgba(104, 225, 255, 0.18));
+            border: 1px solid rgba(105, 240, 168, 0.45);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .victory-banner h2 {
+            font-size: 1.45rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .victory-banner p {
+            color: var(--muted);
+            line-height: 1.6;
+        }
 
             .plateau-shell {
                 padding: 18px;
@@ -398,11 +419,11 @@
                 transform: rotate(270deg);
             }
 
-            .carte {
-                aspect-ratio: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+        .carte {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
                 border-radius: 18px;
                 border: 1px solid rgba(104, 225, 255, 0.34);
                 background:
@@ -414,8 +435,18 @@
                 font-weight: bold;
                 cursor: pointer;
                 transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-            }
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+
+        .carte-texte {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+        }
 
             .carte:hover:not(:disabled):not(.inactive) {
                 transform: translateY(-2px) scale(1.02);
@@ -482,11 +513,15 @@
                 }
             }
 
-            .controles {
-                width: min(100%, 920px);
-                display: flex;
-                justify-content: center;
-            }
+        .controles {
+            width: min(100%, 920px);
+            display: flex;
+            justify-content: center;
+            position: sticky;
+            bottom: 16px;
+            z-index: 4;
+            margin-top: 6px;
+        }
 
             .reset-btn {
                 padding: 12px 26px;
@@ -575,38 +610,38 @@
             <aside class="sidebar">
                 <div class="logo">
                     <h2>MEMYRINTH</h2>
-                    <p>Track the shifting maze, watch your score line, and use the central mission panel to understand
+                    <p id="brand-copy">Track the shifting maze, watch your score line, and use the central mission panel to understand
                         what each level is asking from you.</p>
                 </div>
 
                 <div class="sidebar-panel">
-                    <span class="panel-kicker">Telemetry</span>
+                    <span class="panel-kicker" id="telemetry-kicker">Telemetry</span>
                     <div class="stats-section">
                         <div class="stat-item">
-                            <span class="stat-label">Level</span>
+                            <span class="stat-label" id="label-level">Level</span>
                             <div class="stat-value" id="stat-level">1/5</div>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Score</span>
+                            <span class="stat-label" id="label-score">Score</span>
                             <div class="stat-value" id="stat-score">0</div>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Pairs</span>
+                            <span class="stat-label" id="label-pairs">Pairs</span>
                             <div class="stat-value" id="stat-pairs">0/8</div>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Flips</span>
+                            <span class="stat-label" id="label-flips">Flips</span>
                             <div class="stat-value" id="stat-flips">0</div>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Time</span>
+                            <span class="stat-label" id="label-time">Time</span>
                             <div class="stat-value" id="stat-time">0s</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="sidebar-panel">
-                    <span class="panel-kicker">Language</span>
+                    <span class="panel-kicker" id="language-kicker">Language</span>
                     <div class="lang-toggle">
                         <button class="lang-btn active" data-lang="en" onclick="changeLanguage('en')">EN</button>
                         <button class="lang-btn" data-lang="fr" onclick="changeLanguage('fr')">FR</button>
@@ -640,6 +675,105 @@
         <script>
             let timerInterval = null;
             let elapsedSeconds = 0;
+            let currentLanguage = 'en';
+            let timerStarted = false;
+
+            const uiText = {
+                en: {
+                    brandCopy: 'Track the shifting maze, watch your score line, and use the central mission panel to understand what each level is asking from you.',
+                    telemetry: 'Telemetry',
+                    language: 'Language',
+                    labels: ['Level', 'Score', 'Pairs', 'Flips', 'Time'],
+                    subtitle: ['Calibration Run', 'Pattern Expansion', 'Rotating Sector', 'Collision Pressure', 'Full Maze'],
+                    heroCopy: {
+                        early: 'Read the board calmly, memorize the numbers, and build momentum before the maze starts to drift.',
+                        mid: 'The maze now fights back. Keep your bearings as the board rotates and your errors become louder.',
+                        late: 'This is the complete maze. Track the whole board, survive the rapid rotations, and finish the run clean.'
+                    },
+                    missionKicker: 'Current Mission',
+                    difficulty: ['Calm Start', 'Pattern Build', 'Spatial Twist', 'Pressure Spike', 'Full Chaos'],
+                    missionTitle: (level, totalPairs) => level < 5
+                        ? `Secure ${totalPairs} pairs to reach Level ${level + 1}`
+                        : `Lock all ${totalPairs} pairs to finish the maze`,
+                    missionCopy: [
+                        'The first sector teaches the rhythm. Accuracy matters more than speed.',
+                        'The board grows wider here. Scan in lanes and avoid wasting flips.',
+                        null,
+                        'Wrong guesses create collisions. Stay precise and keep your mental map stable.',
+                        'The final board is fully active, and the rotation accelerates. Commit to the pattern.'
+                    ],
+                    rotationMission: (threshold) => `Rotation begins after every ${threshold} successful matches.`,
+                    progress: 'Progress',
+                    pairsWord: 'pairs',
+                    mechanic: 'Mechanic',
+                    mechanicText: (level, threshold) => {
+                        if (level < 3) return 'Classic memory board';
+                        if (level === 3) return `Rotate every ${threshold} matches`;
+                        if (level === 4) return 'Rotation plus collision effects';
+                        return `Fast rotation every ${threshold} matches`;
+                    },
+                    status: {
+                        won: 'Run complete. You mastered the maze.',
+                        checking: 'Hold the pattern. Verifying the pair...',
+                        next: (level) => `Sector cleared. Preparing Level ${level + 1}`,
+                        collision: 'Bad read. Re-center and track the revealed numbers.',
+                        rotation: (remaining) => `Board rotates after ${remaining} more matches.`,
+                        idle: 'Pick two cards and build a clean memory chain.'
+                    },
+                    restart: 'Restart Run',
+                    victoryTitle: 'Congratulations',
+                    victoryCopy: 'You cleared every sector of the maze. Your memory run is complete.'
+                },
+                fr: {
+                    brandCopy: 'Suivez le labyrinthe mouvant, gardez un oeil sur votre score, et utilisez le panneau central pour comprendre l objectif de chaque niveau.',
+                    telemetry: 'Donnees',
+                    language: 'Langue',
+                    labels: ['Niveau', 'Score', 'Paires', 'Coups', 'Temps'],
+                    subtitle: ['Phase Calme', 'Extension Motif', 'Secteur Rotatif', 'Pression Collision', 'Labyrinthe Total'],
+                    heroCopy: {
+                        early: 'Lisez le plateau calmement, memorisez les nombres, et prenez votre rythme avant que le labyrinthe ne se deforme.',
+                        mid: 'Le labyrinthe se defend maintenant. Gardez vos reperes pendant que le plateau tourne et que les erreurs deviennent plus visibles.',
+                        late: 'Voici le plateau complet. Suivez toute la grille, survivez aux rotations rapides, et terminez la session proprement.'
+                    },
+                    missionKicker: 'Mission',
+                    difficulty: ['Depart Calme', 'Motif Dense', 'Twist Spatial', 'Pic de Pression', 'Chaos Total'],
+                    missionTitle: (level, totalPairs) => level < 5
+                        ? `Trouvez ${totalPairs} paires pour atteindre le niveau ${level + 1}`
+                        : `Verrouillez les ${totalPairs} paires pour terminer le labyrinthe`,
+                    missionCopy: [
+                        'Le premier secteur enseigne le rythme. La precision compte plus que la vitesse.',
+                        'Le plateau s elargit ici. Balayez par lignes et evitez les coups perdus.',
+                        null,
+                        'Les erreurs declenchent des collisions. Restez precis et gardez votre carte mentale stable.',
+                        'Le plateau final est entierement actif et la rotation accelere. Tenez le motif jusqu au bout.'
+                    ],
+                    rotationMission: (threshold) => `La rotation commence apres ${threshold} paires reussies.`,
+                    progress: 'Progression',
+                    pairsWord: 'paires',
+                    mechanic: 'Mecanique',
+                    mechanicText: (level, threshold) => {
+                        if (level < 3) return 'Memoire classique';
+                        if (level === 3) return `Rotation toutes les ${threshold} paires`;
+                        if (level === 4) return 'Rotation et effets de collision';
+                        return `Rotation rapide toutes les ${threshold} paires`;
+                    },
+                    status: {
+                        won: 'Session terminee. Vous avez maitrise le labyrinthe.',
+                        checking: 'Gardez le motif. Verification de la paire...',
+                        next: (level) => `Secteur nettoye. Preparation du niveau ${level + 1}`,
+                        collision: 'Mauvaise lecture. Recentrez-vous et retenez les nombres reveles.',
+                        rotation: (remaining) => `Le plateau tourne dans ${remaining} paires.`,
+                        idle: 'Choisissez deux cartes et construisez une chaine de memoire propre.'
+                    },
+                    restart: 'Recommencer',
+                    victoryTitle: 'Felicitations',
+                    victoryCopy: 'Vous avez nettoye tous les secteurs du labyrinthe. Votre parcours memoire est termine.'
+                }
+            };
+
+            function languagePack() {
+                return uiText[currentLanguage] || uiText.en;
+            }
 
             function updateSidebar() {
                 if (!__ml_signals) return;
@@ -651,38 +785,194 @@
             }
 
             function startTimer() {
+                if (timerStarted || !__ml_signals || __ml_signals['jeu_gagne'].get()) return;
                 if (timerInterval) clearInterval(timerInterval);
+                timerStarted = true;
                 timerInterval = setInterval(() => {
+                    if (!__ml_signals || __ml_signals['jeu_gagne'].get()) {
+                        stopTimer();
+                        return;
+                    }
                     elapsedSeconds += 1;
                     document.getElementById('stat-time').textContent = elapsedSeconds + 's';
                 }, 1000);
             }
 
-            function resetTimer() {
+            function stopTimer() {
                 if (timerInterval) clearInterval(timerInterval);
-                elapsedSeconds = 0;
-                document.getElementById('stat-time').textContent = '0s';
-                startTimer();
+                timerInterval = null;
+                timerStarted = false;
             }
 
-            function initializeGame() {
-                if (typeof __ml_signals === 'undefined' || typeof _engine === 'undefined') {
-                    setTimeout(initializeGame, 100);
+            function resetTimer() {
+                stopTimer();
+                elapsedSeconds = 0;
+                document.getElementById('stat-time').textContent = '0s';
+            }
+
+            function stabilizeRenderedLayout() {
+                const root = document.getElementById('__ml_root');
+                if (!root) return;
+
+            const game = root.querySelector('.memyrinth');
+            const board = root.querySelector('.plateau');
+            const boardShell = root.querySelector('.plateau-shell');
+            const controls = root.querySelector('.controles');
+
+                if (game && board && boardShell && controls && controls.parentElement === board) {
+                    game.insertBefore(controls, boardShell.nextSibling);
+                }
+            }
+
+            function applyLanguage() {
+                const pack = languagePack();
+                document.documentElement.lang = currentLanguage;
+                document.getElementById('brand-copy').textContent = pack.brandCopy;
+                document.getElementById('telemetry-kicker').textContent = pack.telemetry;
+                document.getElementById('language-kicker').textContent = pack.language;
+                document.getElementById('label-level').textContent = pack.labels[0];
+                document.getElementById('label-score').textContent = pack.labels[1];
+                document.getElementById('label-pairs').textContent = pack.labels[2];
+                document.getElementById('label-flips').textContent = pack.labels[3];
+                document.getElementById('label-time').textContent = pack.labels[4];
+
+                if (!__ml_signals) return;
+
+                const level = __ml_signals['niveau'].get();
+                const totalPairs = __ml_signals['nb_paires'].get();
+                const foundPairs = __ml_signals['paires_trouvees'].get();
+                const rotationThreshold = __ml_signals['rotation_seuil'].get();
+                const sinceRotation = __ml_signals['paires_depuis_rotation'].get();
+                const gameWon = __ml_signals['jeu_gagne'].get();
+                const checking = __ml_signals['en_verification'].get();
+                const collision = __ml_signals['collision_active'].get();
+                const rotating = __ml_signals['rotation_active'].get();
+
+                const root = document.getElementById('__ml_root');
+                if (!root) return;
+
+                const subtitle = root.querySelector('.sous-titre');
+                if (subtitle) subtitle.textContent = pack.subtitle[level - 1];
+
+                const heroCopy = root.querySelector('.hero-copy');
+                if (heroCopy) {
+                    heroCopy.textContent = level < 3 ? pack.heroCopy.early : (level < 5 ? pack.heroCopy.mid : pack.heroCopy.late);
+                }
+
+                const panelKicker = root.querySelector('.panneau-mission .panel-kicker');
+                if (panelKicker) panelKicker.textContent = pack.missionKicker;
+
+                const badge = root.querySelector('.difficulty-badge');
+                if (badge) badge.textContent = pack.difficulty[level - 1];
+
+                const missionTitle = root.querySelector('.mission-title');
+                if (missionTitle) missionTitle.textContent = pack.missionTitle(level, totalPairs);
+
+                const missionCopy = root.querySelector('.mission-copy');
+                if (missionCopy) {
+                    missionCopy.textContent = level === 3 ? pack.rotationMission(rotationThreshold) : pack.missionCopy[level - 1];
+                }
+
+                const progressMeta = root.querySelectorAll('.progression-meta span');
+                if (progressMeta.length >= 2) {
+                    progressMeta[0].textContent = pack.progress;
+                    progressMeta[1].textContent = `${foundPairs} / ${totalPairs} ${pack.pairsWord}`;
+                }
+
+                const mechanicStrong = root.querySelector('.mechanic-chip strong');
+                const mechanicSpan = root.querySelector('.mechanic-chip span');
+                if (mechanicStrong) mechanicStrong.textContent = pack.mechanic;
+                if (mechanicSpan) mechanicSpan.textContent = pack.mechanicText(level, rotationThreshold);
+
+                const status = root.querySelector('.status p');
+                if (status) {
+                    if (gameWon) status.textContent = pack.status.won;
+                    else if (checking) status.textContent = pack.status.checking;
+                    else if (foundPairs === totalPairs && level < 5) status.textContent = pack.status.next(level);
+                    else if (collision) status.textContent = pack.status.collision;
+                    else if (rotating) status.textContent = pack.status.rotation(rotationThreshold - sinceRotation);
+                    else status.textContent = pack.status.idle;
+                }
+
+                const resetButton = root.querySelector('.reset-btn');
+                if (resetButton) resetButton.textContent = pack.restart;
+            }
+
+            function updateVictoryBanner() {
+                const root = document.getElementById('__ml_root');
+                if (!root || !__ml_signals) return;
+
+                const game = root.querySelector('.memyrinth');
+                if (!game) return;
+
+                let banner = root.querySelector('.victory-banner');
+                const won = __ml_signals['jeu_gagne'].get();
+                const pack = languagePack();
+
+                if (!won) {
+                    if (banner) banner.remove();
                     return;
                 }
 
-                if (typeof __ml_render === 'function') {
-                    __ml_render();
+                stopTimer();
+
+                if (!banner) {
+                    banner = document.createElement('div');
+                    banner.className = 'victory-banner';
+                    const title = document.createElement('h2');
+                    const copy = document.createElement('p');
+                    banner.appendChild(title);
+                    banner.appendChild(copy);
+                    const status = root.querySelector('.status');
+                    game.insertBefore(banner, status);
                 }
 
+                banner.querySelector('h2').textContent = pack.victoryTitle;
+                banner.querySelector('p').textContent = pack.victoryCopy;
+            }
+
+            function refreshInterface() {
+                stabilizeRenderedLayout();
+                applyLanguage();
+                updateVictoryBanner();
+                updateSidebar();
+            }
+
+            function initializeGame() {
+            if (typeof __ml_signals === 'undefined' || typeof _engine === 'undefined') {
+                setTimeout(initializeGame, 100);
+                return;
+            }
+
+            if (typeof __ml_render === 'function' && !window.__memyrinthWrappedRender) {
+                const originalRender = __ml_render;
+                window.__memyrinthWrappedRender = true;
+                window.__ml_render = function () {
+                    originalRender();
+                    refreshInterface();
+                };
+            }
+
+            if (typeof __ml_render === 'function') {
+                __ml_render();
+            }
+
                 shuffleCardsForLevel(1);
-                startTimer();
+                resetTimer();
 
                 ['niveau', 'score', 'paires_trouvees', 'nb_paires', 'tentatives'].forEach(signal => {
                     if (_engine && typeof _engine.on_change === 'function') {
-                        _engine.on_change(signal)(() => updateSidebar());
+                        _engine.on_change(signal)(() => refreshInterface());
                     }
                 });
+
+                if (_engine && typeof _engine.on_change === 'function') {
+                    _engine.on_change('premier_choix')(() => {
+                        if (__ml_signals['premier_choix'].get() !== -1) {
+                            startTimer();
+                        }
+                    });
+                }
 
                 if (_engine && typeof _engine.on_change === 'function') {
                     _engine.on_change('besoin_melange')(() => {
@@ -691,10 +981,11 @@
                         if (niveau === 1) {
                             resetTimer();
                         }
+                        refreshInterface();
                     });
                 }
 
-                updateSidebar();
+                refreshInterface();
             }
 
             function shuffleArray(arr) {
@@ -736,9 +1027,11 @@
             }
 
             function changeLanguage(lang) {
+                currentLanguage = lang;
                 document.querySelectorAll('.lang-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.lang === lang);
                 });
+                refreshInterface();
             }
 
             window.addEventListener('load', () => {

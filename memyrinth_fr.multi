@@ -222,11 +222,11 @@ déf memyrinth() utilise ui:
                                 disabled=(correspondantes[i] ou en_verification)
                                 onclick=clic_carte(i):
                             si correspondantes[i]:
-                                "OK"
+                                span class="carte-texte" style=("transform: rotate(" + chaine(0 - angle_rotation) + "deg);"): "OK"
                             sinon si revelees[i]:
-                                chaine(cartes[i])
+                                span class="carte-texte" style=("transform: rotate(" + chaine(0 - angle_rotation) + "deg);"): chaine(cartes[i])
                             sinon:
-                                "?"
+                                span class="carte-texte" style=("transform: rotate(" + chaine(0 - angle_rotation) + "deg);"): "?"
 
             div class="controles":
                 button class="reset-btn" onclick=reinitialiser_jeu(): "Restart Run"

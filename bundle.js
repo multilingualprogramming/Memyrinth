@@ -282,228 +282,240 @@ function __ml_render() {
     return;
   }
   __root.innerHTML = '';
-  const __el_1883257842640 = document.createElement('div');
-  __el_1883257842640.className = 'memyrinth';
-  const __el_1883258629184 = document.createElement('div');
-  __el_1883258629184.className = 'entete';
-  const __el_1883258598944 = document.createElement('h1');
-  __el_1883258598944.appendChild(document.createTextNode(String('MEMYRINTH')));
-  __el_1883258629184.appendChild(__el_1883258598944);
-  const __el_1883258155920 = document.createElement('p');
-  __el_1883258155920.className = 'sous-titre';
+  const __el_2000767235408 = document.createElement('div');
+  __el_2000767235408.className = 'memyrinth';
+  const __el_2000768035904 = document.createElement('div');
+  __el_2000768035904.className = 'entete';
+  const __el_2000768005664 = document.createElement('h1');
+  __el_2000768005664.appendChild(document.createTextNode(String('MEMYRINTH')));
+  __el_2000768035904.appendChild(__el_2000768005664);
+  const __el_2000767546256 = document.createElement('p');
+  __el_2000767546256.className = 'sous-titre';
   if ((_engine.get('niveau').get() == 1)) {
-    __el_1883258155920.appendChild(document.createTextNode(String('Calibration Run')));
+    __el_2000767546256.appendChild(document.createTextNode(String('Calibration Run')));
   }
   else if ((_engine.get('niveau').get() == 2)) {
-    __el_1883258155920.appendChild(document.createTextNode(String('Pattern Expansion')));
+    __el_2000767546256.appendChild(document.createTextNode(String('Pattern Expansion')));
   }
   else if ((_engine.get('niveau').get() == 3)) {
-    __el_1883258155920.appendChild(document.createTextNode(String('Rotating Sector')));
+    __el_2000767546256.appendChild(document.createTextNode(String('Rotating Sector')));
   }
   else if ((_engine.get('niveau').get() == 4)) {
-    __el_1883258155920.appendChild(document.createTextNode(String('Collision Pressure')));
+    __el_2000767546256.appendChild(document.createTextNode(String('Collision Pressure')));
   }
   else {
-    __el_1883258155920.appendChild(document.createTextNode(String('Full Maze')));
+    __el_2000767546256.appendChild(document.createTextNode(String('Full Maze')));
   }
-  __el_1883258629184.appendChild(__el_1883258155920);
-  const __el_1883258156240 = document.createElement('p');
-  __el_1883258156240.className = 'hero-copy';
+  __el_2000768035904.appendChild(__el_2000767546256);
+  const __el_2000767546576 = document.createElement('p');
+  __el_2000767546576.className = 'hero-copy';
   if ((_engine.get('niveau').get() < 3)) {
-    __el_1883258156240.appendChild(document.createTextNode(String('Read the board calmly, memorize the numbers, and build momentum before the maze starts to drift.')));
+    __el_2000767546576.appendChild(document.createTextNode(String('Read the board calmly, memorize the numbers, and build momentum before the maze starts to drift.')));
   }
   else if ((_engine.get('niveau').get() < 5)) {
-    __el_1883258156240.appendChild(document.createTextNode(String('The maze now fights back. Keep your bearings as the board rotates and your errors become louder.')));
+    __el_2000767546576.appendChild(document.createTextNode(String('The maze now fights back. Keep your bearings as the board rotates and your errors become louder.')));
   }
   else {
-    __el_1883258156240.appendChild(document.createTextNode(String('This is the complete maze. Track the whole board, survive the rapid rotations, and finish the run clean.')));
+    __el_2000767546576.appendChild(document.createTextNode(String('This is the complete maze. Track the whole board, survive the rapid rotations, and finish the run clean.')));
   }
-  __el_1883258629184.appendChild(__el_1883258156240);
-  __el_1883257842640.appendChild(__el_1883258629184);
-  const __el_1883257838928 = document.createElement('div');
-  __el_1883257838928.className = 'panneau-mission';
-  const __el_1883258258032 = document.createElement('div');
-  __el_1883258258032.className = 'panneau-entete';
-  const __el_1883258629792 = document.createElement('span');
-  __el_1883258629792.className = 'panel-kicker';
-  __el_1883258629792.appendChild(document.createTextNode(String('Current Mission')));
-  __el_1883258258032.appendChild(__el_1883258629792);
-  const __el_1883258210064 = document.createElement('span');
-  __el_1883258210064.className = 'difficulty-badge';
+  __el_2000768035904.appendChild(__el_2000767546576);
+  __el_2000767235408.appendChild(__el_2000768035904);
+  const __el_2000767229264 = document.createElement('div');
+  __el_2000767229264.className = 'panneau-mission';
+  const __el_2000767664752 = document.createElement('div');
+  __el_2000767664752.className = 'panneau-entete';
+  const __el_2000768036512 = document.createElement('span');
+  __el_2000768036512.className = 'panel-kicker';
+  __el_2000768036512.appendChild(document.createTextNode(String('Current Mission')));
+  __el_2000767664752.appendChild(__el_2000768036512);
+  const __el_2000767600400 = document.createElement('span');
+  __el_2000767600400.className = 'difficulty-badge';
   if ((_engine.get('niveau').get() == 1)) {
-    __el_1883258210064.appendChild(document.createTextNode(String('Calm Start')));
+    __el_2000767600400.appendChild(document.createTextNode(String('Calm Start')));
   }
   else if ((_engine.get('niveau').get() == 2)) {
-    __el_1883258210064.appendChild(document.createTextNode(String('Pattern Build')));
+    __el_2000767600400.appendChild(document.createTextNode(String('Pattern Build')));
   }
   else if ((_engine.get('niveau').get() == 3)) {
-    __el_1883258210064.appendChild(document.createTextNode(String('Spatial Twist')));
+    __el_2000767600400.appendChild(document.createTextNode(String('Spatial Twist')));
   }
   else if ((_engine.get('niveau').get() == 4)) {
-    __el_1883258210064.appendChild(document.createTextNode(String('Pressure Spike')));
+    __el_2000767600400.appendChild(document.createTextNode(String('Pressure Spike')));
   }
   else {
-    __el_1883258210064.appendChild(document.createTextNode(String('Full Chaos')));
+    __el_2000767600400.appendChild(document.createTextNode(String('Full Chaos')));
   }
-  __el_1883258258032.appendChild(__el_1883258210064);
-  __el_1883257838928.appendChild(__el_1883258258032);
-  const __el_1883258258304 = document.createElement('h2');
-  __el_1883258258304.className = 'mission-title';
+  __el_2000767664752.appendChild(__el_2000767600400);
+  __el_2000767229264.appendChild(__el_2000767664752);
+  const __el_2000767665024 = document.createElement('h2');
+  __el_2000767665024.className = 'mission-title';
   if ((_engine.get('niveau').get() < 5)) {
-    __el_1883258258304.appendChild(document.createTextNode(String(((('Secure ' + chaine(_engine.get('nb_paires').get())) + ' pairs to reach Level ') + chaine((_engine.get('niveau').get() + 1))))));
+    __el_2000767665024.appendChild(document.createTextNode(String(((('Secure ' + chaine(_engine.get('nb_paires').get())) + ' pairs to reach Level ') + chaine((_engine.get('niveau').get() + 1))))));
   }
   else {
-    __el_1883258258304.appendChild(document.createTextNode(String((('Lock all ' + chaine(_engine.get('nb_paires').get())) + ' pairs to finish the maze'))));
+    __el_2000767665024.appendChild(document.createTextNode(String((('Lock all ' + chaine(_engine.get('nb_paires').get())) + ' pairs to finish the maze'))));
   }
-  __el_1883257838928.appendChild(__el_1883258258304);
-  const __el_1883257862224 = document.createElement('p');
-  __el_1883257862224.className = 'mission-copy';
+  __el_2000767229264.appendChild(__el_2000767665024);
+  const __el_2000767252560 = document.createElement('p');
+  __el_2000767252560.className = 'mission-copy';
   if ((_engine.get('niveau').get() == 1)) {
-    __el_1883257862224.appendChild(document.createTextNode(String('The first sector teaches the rhythm. Accuracy matters more than speed.')));
+    __el_2000767252560.appendChild(document.createTextNode(String('The first sector teaches the rhythm. Accuracy matters more than speed.')));
   }
   else if ((_engine.get('niveau').get() == 2)) {
-    __el_1883257862224.appendChild(document.createTextNode(String('The board grows wider here. Scan in lanes and avoid wasting flips.')));
+    __el_2000767252560.appendChild(document.createTextNode(String('The board grows wider here. Scan in lanes and avoid wasting flips.')));
   }
   else if ((_engine.get('niveau').get() == 3)) {
-    __el_1883257862224.appendChild(document.createTextNode(String((('Rotation begins after every ' + chaine(_engine.get('rotation_seuil').get())) + ' successful matches.'))));
+    __el_2000767252560.appendChild(document.createTextNode(String((('Rotation begins after every ' + chaine(_engine.get('rotation_seuil').get())) + ' successful matches.'))));
   }
   else if ((_engine.get('niveau').get() == 4)) {
-    __el_1883257862224.appendChild(document.createTextNode(String('Wrong guesses create collisions. Stay precise and keep your mental map stable.')));
+    __el_2000767252560.appendChild(document.createTextNode(String('Wrong guesses create collisions. Stay precise and keep your mental map stable.')));
   }
   else {
-    __el_1883257862224.appendChild(document.createTextNode(String('The final board is fully active, and the rotation accelerates. Commit to the pattern.')));
+    __el_2000767252560.appendChild(document.createTextNode(String('The final board is fully active, and the rotation accelerates. Commit to the pattern.')));
   }
-  __el_1883257838928.appendChild(__el_1883257862224);
-  const __el_1883258323024 = document.createElement('div');
-  __el_1883258323024.className = 'progression';
-  const __el_1883258707296 = document.createElement('div');
-  __el_1883258707296.className = 'progression-meta';
-  const __el_1883257862480 = document.createElement('span');
-  __el_1883257862480.appendChild(document.createTextNode(String('Progress')));
-  __el_1883258707296.appendChild(__el_1883257862480);
-  const __el_1883258707056 = document.createElement('span');
-  __el_1883258707056.appendChild(document.createTextNode(String((((chaine(_engine.get('paires_trouvees').get()) + ' / ') + chaine(_engine.get('nb_paires').get())) + ' pairs'))));
-  __el_1883258707296.appendChild(__el_1883258707056);
-  __el_1883258323024.appendChild(__el_1883258707296);
-  const __el_1883257552608 = document.createElement('div');
-  __el_1883257552608.className = 'progression-barre';
+  __el_2000767229264.appendChild(__el_2000767252560);
+  const __el_2000767713360 = document.createElement('div');
+  __el_2000767713360.className = 'progression';
+  const __el_2000768097632 = document.createElement('div');
+  __el_2000768097632.className = 'progression-meta';
+  const __el_2000767252816 = document.createElement('span');
+  __el_2000767252816.appendChild(document.createTextNode(String('Progress')));
+  __el_2000768097632.appendChild(__el_2000767252816);
+  const __el_2000768097392 = document.createElement('span');
+  __el_2000768097392.appendChild(document.createTextNode(String((((chaine(_engine.get('paires_trouvees').get()) + ' / ') + chaine(_engine.get('nb_paires').get())) + ' pairs'))));
+  __el_2000768097632.appendChild(__el_2000768097392);
+  __el_2000767713360.appendChild(__el_2000768097632);
+  const __el_2000758423264 = document.createElement('div');
+  __el_2000758423264.className = 'progression-barre';
   if ((_engine.get('paires_trouvees').get() == _engine.get('nb_paires').get())) {
-    const __el_1883258688656 = document.createElement('div');
-    __el_1883258688656.className = 'progression-remplissage progress-100';
-    __el_1883258688656.appendChild(document.createTextNode(String('')));
-    __el_1883257552608.appendChild(__el_1883258688656);
+    const __el_2000768078992 = document.createElement('div');
+    __el_2000768078992.className = 'progression-remplissage progress-100';
+    __el_2000768078992.appendChild(document.createTextNode(String('')));
+    __el_2000758423264.appendChild(__el_2000768078992);
   }
   else if ((_engine.get('paires_trouvees').get() >= (_engine.get('nb_paires').get() / 2))) {
-    const __el_1883247453904 = document.createElement('div');
-    __el_1883247453904.className = 'progression-remplissage progress-50';
-    __el_1883247453904.appendChild(document.createTextNode(String('')));
-    __el_1883257552608.appendChild(__el_1883247453904);
+    const __el_2000756713168 = document.createElement('div');
+    __el_2000756713168.className = 'progression-remplissage progress-50';
+    __el_2000756713168.appendChild(document.createTextNode(String('')));
+    __el_2000758423264.appendChild(__el_2000756713168);
   }
   else if ((_engine.get('paires_trouvees').get() >= (_engine.get('nb_paires').get() / 4))) {
-    const __el_1883247454128 = document.createElement('div');
-    __el_1883247454128.className = 'progression-remplissage progress-25';
-    __el_1883247454128.appendChild(document.createTextNode(String('')));
-    __el_1883257552608.appendChild(__el_1883247454128);
+    const __el_2000756713392 = document.createElement('div');
+    __el_2000756713392.className = 'progression-remplissage progress-25';
+    __el_2000756713392.appendChild(document.createTextNode(String('')));
+    __el_2000758423264.appendChild(__el_2000756713392);
   }
   else if ((_engine.get('paires_trouvees').get() > 0)) {
-    const __el_1883257627664 = document.createElement('div');
-    __el_1883257627664.className = 'progression-remplissage progress-10';
-    __el_1883257627664.appendChild(document.createTextNode(String('')));
-    __el_1883257552608.appendChild(__el_1883257627664);
+    const __el_2000758498320 = document.createElement('div');
+    __el_2000758498320.className = 'progression-remplissage progress-10';
+    __el_2000758498320.appendChild(document.createTextNode(String('')));
+    __el_2000758423264.appendChild(__el_2000758498320);
   }
   else {
-    const __el_1883258688848 = document.createElement('div');
-    __el_1883258688848.className = 'progression-remplissage progress-0';
-    __el_1883258688848.appendChild(document.createTextNode(String('')));
-    __el_1883257552608.appendChild(__el_1883258688848);
+    const __el_2000768079184 = document.createElement('div');
+    __el_2000768079184.className = 'progression-remplissage progress-0';
+    __el_2000768079184.appendChild(document.createTextNode(String('')));
+    __el_2000758423264.appendChild(__el_2000768079184);
   }
-  __el_1883258323024.appendChild(__el_1883257552608);
-  __el_1883257838928.appendChild(__el_1883258323024);
-  const __el_1883257091376 = document.createElement('div');
-  __el_1883257091376.className = 'mechanic-chip';
-  const __el_1883257797872 = document.createElement('strong');
-  __el_1883257797872.appendChild(document.createTextNode(String('Mechanic')));
-  __el_1883257091376.appendChild(__el_1883257797872);
-  const __el_1883257798032 = document.createElement('span');
+  __el_2000767713360.appendChild(__el_2000758423264);
+  __el_2000767229264.appendChild(__el_2000767713360);
+  const __el_2000757962176 = document.createElement('div');
+  __el_2000757962176.className = 'mechanic-chip';
+  const __el_2000767171984 = document.createElement('strong');
+  __el_2000767171984.appendChild(document.createTextNode(String('Mechanic')));
+  __el_2000757962176.appendChild(__el_2000767171984);
+  const __el_2000767172144 = document.createElement('span');
   if ((_engine.get('niveau').get() < 3)) {
-    __el_1883257798032.appendChild(document.createTextNode(String('Classic memory board')));
+    __el_2000767172144.appendChild(document.createTextNode(String('Classic memory board')));
   }
   else if ((_engine.get('niveau').get() == 3)) {
-    __el_1883257798032.appendChild(document.createTextNode(String((('Rotate every ' + chaine(_engine.get('rotation_seuil').get())) + ' matches'))));
+    __el_2000767172144.appendChild(document.createTextNode(String((('Rotate every ' + chaine(_engine.get('rotation_seuil').get())) + ' matches'))));
   }
   else if ((_engine.get('niveau').get() == 4)) {
-    __el_1883257798032.appendChild(document.createTextNode(String('Rotation plus collision effects')));
+    __el_2000767172144.appendChild(document.createTextNode(String('Rotation plus collision effects')));
   }
   else {
-    __el_1883257798032.appendChild(document.createTextNode(String((('Fast rotation every ' + chaine(_engine.get('rotation_seuil').get())) + ' matches'))));
+    __el_2000767172144.appendChild(document.createTextNode(String((('Fast rotation every ' + chaine(_engine.get('rotation_seuil').get())) + ' matches'))));
   }
-  __el_1883257091376.appendChild(__el_1883257798032);
-  __el_1883257838928.appendChild(__el_1883257091376);
-  __el_1883257842640.appendChild(__el_1883257838928);
-  const __el_1883257839952 = document.createElement('div');
-  __el_1883257839952.className = 'status';
-  const __el_1883257839824 = document.createElement('p');
+  __el_2000757962176.appendChild(__el_2000767172144);
+  __el_2000767229264.appendChild(__el_2000757962176);
+  __el_2000767235408.appendChild(__el_2000767229264);
+  const __el_2000767230288 = document.createElement('div');
+  __el_2000767230288.className = 'status';
+  const __el_2000767230160 = document.createElement('p');
   if (_engine.get('jeu_gagne').get()) {
-    __el_1883257839824.appendChild(document.createTextNode(String('Run complete. You mastered the maze.')));
+    __el_2000767230160.appendChild(document.createTextNode(String('Run complete. You mastered the maze.')));
   }
   else if (_engine.get('en_verification').get()) {
-    __el_1883257839824.appendChild(document.createTextNode(String('Hold the pattern. Verifying the pair...')));
+    __el_2000767230160.appendChild(document.createTextNode(String('Hold the pattern. Verifying the pair...')));
   }
   else if ((_engine.get('paires_trouvees').get() == _engine.get('nb_paires').get())) {
     if ((_engine.get('niveau').get() < 5)) {
-      __el_1883257839824.appendChild(document.createTextNode(String(('Sector cleared. Preparing Level ' + chaine((_engine.get('niveau').get() + 1))))));
+      __el_2000767230160.appendChild(document.createTextNode(String(('Sector cleared. Preparing Level ' + chaine((_engine.get('niveau').get() + 1))))));
     }
     else {
-      __el_1883257839824.appendChild(document.createTextNode(String('Pick two cards and build a clean memory chain.')));
+      __el_2000767230160.appendChild(document.createTextNode(String('Pick two cards and build a clean memory chain.')));
     }
   }
   else if (_engine.get('collision_active').get()) {
-    __el_1883257839824.appendChild(document.createTextNode(String('Bad read. Re-center and track the revealed numbers.')));
+    __el_2000767230160.appendChild(document.createTextNode(String('Bad read. Re-center and track the revealed numbers.')));
   }
   else if (_engine.get('rotation_active').get()) {
-    __el_1883257839824.appendChild(document.createTextNode(String((('Board rotates after ' + chaine((_engine.get('rotation_seuil').get() - _engine.get('paires_depuis_rotation').get()))) + ' more matches.'))));
+    __el_2000767230160.appendChild(document.createTextNode(String((('Board rotates after ' + chaine((_engine.get('rotation_seuil').get() - _engine.get('paires_depuis_rotation').get()))) + ' more matches.'))));
   }
   else {
-    __el_1883257839824.appendChild(document.createTextNode(String('Pick two cards and build a clean memory chain.')));
+    __el_2000767230160.appendChild(document.createTextNode(String('Pick two cards and build a clean memory chain.')));
   }
-  __el_1883257839952.appendChild(__el_1883257839824);
-  __el_1883257842640.appendChild(__el_1883257839952);
-  const __el_1883257842512 = document.createElement('div');
-  __el_1883257842512.className = 'plateau-shell';
-  const __el_1883257842384 = document.createElement('div');
-  __el_1883257842384.className = 'plateau';
-  __el_1883257842384.setAttribute('style', (((('grid-template-columns: repeat(' + chaine(_engine.get('nb_colonnes').get())) + ', minmax(0, 1fr)); transform: rotate(') + chaine(_engine.get('angle_rotation').get())) + 'deg);'));
+  __el_2000767230288.appendChild(__el_2000767230160);
+  __el_2000767235408.appendChild(__el_2000767230288);
+  const __el_2000767235280 = document.createElement('div');
+  __el_2000767235280.className = 'plateau-shell';
+  const __el_2000767235152 = document.createElement('div');
+  __el_2000767235152.className = 'plateau';
+  __el_2000767235152.setAttribute('style', (((('grid-template-columns: repeat(' + chaine(_engine.get('nb_colonnes').get())) + ', minmax(0, 1fr)); transform: rotate(') + chaine(_engine.get('angle_rotation').get())) + 'deg);'));
   for (const i of intervalle(_engine.get('nb_cartes').get())) {
-    const __el_1883257841616 = document.createElement('button');
-    __el_1883257841616.className = 'carte';
-    if (_engine.get('correspondantes').get()[i]) { __el_1883257841616.classList.add('matched'); }
-    if (_engine.get('revelees').get()[i]) { __el_1883257841616.classList.add('revealed'); }
-    if ((_engine.get('collision_active').get() || ((i == _engine.get('indice_collision_1').get()) || (i == _engine.get('indice_collision_2').get())))) { __el_1883257841616.classList.add('collision'); }
-    __el_1883257841616.disabled = (_engine.get('correspondantes').get()[i] || _engine.get('en_verification').get());
-    __el_1883257841616.addEventListener('click', async () => { clic_carte(i); });
+    const __el_2000767234256 = document.createElement('button');
+    __el_2000767234256.className = 'carte';
+    if (_engine.get('correspondantes').get()[i]) { __el_2000767234256.classList.add('matched'); }
+    if (_engine.get('revelees').get()[i]) { __el_2000767234256.classList.add('revealed'); }
+    if ((_engine.get('collision_active').get() || ((i == _engine.get('indice_collision_1').get()) || (i == _engine.get('indice_collision_2').get())))) { __el_2000767234256.classList.add('collision'); }
+    __el_2000767234256.disabled = (_engine.get('correspondantes').get()[i] || _engine.get('en_verification').get());
+    __el_2000767234256.addEventListener('click', async () => { clic_carte(i); });
     if (_engine.get('correspondantes').get()[i]) {
-      __el_1883257841616.appendChild(document.createTextNode(String('OK')));
+      const __el_2000767233360 = document.createElement('span');
+      __el_2000767233360.className = 'carte-texte';
+      __el_2000767233360.setAttribute('style', (('transform: rotate(' + chaine((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
+      __el_2000767233360.appendChild(document.createTextNode(String('OK')));
+      __el_2000767234256.appendChild(__el_2000767233360);
     }
     else if (_engine.get('revelees').get()[i]) {
-      __el_1883257841616.appendChild(document.createTextNode(String(chaine(_engine.get('cartes').get()[i]))));
+      const __el_2000767232464 = document.createElement('span');
+      __el_2000767232464.className = 'carte-texte';
+      __el_2000767232464.setAttribute('style', (('transform: rotate(' + chaine((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
+      __el_2000767232464.appendChild(document.createTextNode(String(chaine(_engine.get('cartes').get()[i]))));
+      __el_2000767234256.appendChild(__el_2000767232464);
     }
     else {
-      __el_1883257841616.appendChild(document.createTextNode(String('?')));
+      const __el_2000767234128 = document.createElement('span');
+      __el_2000767234128.className = 'carte-texte';
+      __el_2000767234128.setAttribute('style', (('transform: rotate(' + chaine((0 - _engine.get('angle_rotation').get()))) + 'deg);'));
+      __el_2000767234128.appendChild(document.createTextNode(String('?')));
+      __el_2000767234256.appendChild(__el_2000767234128);
     }
-    __el_1883257842384.appendChild(__el_1883257841616);
+    __el_2000767235152.appendChild(__el_2000767234256);
   }
-  const __el_1883257842256 = document.createElement('div');
-  __el_1883257842256.className = 'controles';
-  const __el_1883257842128 = document.createElement('button');
-  __el_1883257842128.className = 'reset-btn';
-  __el_1883257842128.addEventListener('click', async () => { reinitialiser_jeu(); });
-  __el_1883257842128.appendChild(document.createTextNode(String('Restart Run')));
-  __el_1883257842256.appendChild(__el_1883257842128);
-  __el_1883257842384.appendChild(__el_1883257842256);
-  __el_1883257842384.appendChild(document.createTextNode(String(memyrinth())));
-  __el_1883257842512.appendChild(__el_1883257842384);
-  __el_1883257842640.appendChild(__el_1883257842512);
-  __root.appendChild(__el_1883257842640);
+  const __el_2000767234896 = document.createElement('div');
+  __el_2000767234896.className = 'controles';
+  const __el_2000767234768 = document.createElement('button');
+  __el_2000767234768.className = 'reset-btn';
+  __el_2000767234768.addEventListener('click', async () => { reinitialiser_jeu(); });
+  __el_2000767234768.appendChild(document.createTextNode(String('Restart Run')));
+  __el_2000767234896.appendChild(__el_2000767234768);
+  __el_2000767235152.appendChild(__el_2000767234896);
+  __el_2000767235152.appendChild(document.createTextNode(String(memyrinth())));
+  __el_2000767235280.appendChild(__el_2000767235152);
+  __el_2000767235408.appendChild(__el_2000767235280);
+  __root.appendChild(__el_2000767235408);
 }
 
 if (typeof __ml_render === 'function') {
