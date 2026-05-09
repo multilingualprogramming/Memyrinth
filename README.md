@@ -38,7 +38,7 @@ A multilingual memory game showcasing the French Multilingual programming langua
 - **Compiled to**: JavaScript reactive UI bundle via `build-ui-bundle`
 - **Frontend**: Custom bilingual HTML with cyberpunk CSS
 - **Deployment**: GitHub Pages (automatic via GitHub Actions)
-- **Framework**: Multilingual Programming Language (https://github.com/johnsamuelwrites/multilingual)
+- **Framework**: Multilingual Programming Language (https://github.com/multilingualprogramming/multilingual)
 
 ### Build Command
 
@@ -58,10 +58,12 @@ This compiles the French Multilingual source to `bundle.js`, which is loaded by 
 
 ```bash
 # Clone the multilingual package
-git clone https://github.com/johnsamuelwrites/multilingual.git
+git clone https://github.com/multilingualprogramming/multilingual.git
 cd multilingual
 pip install -e ".[wasm]"
-cd ../Memyrinth
+cd ../
+git clone https://github.com/multilingualprogramming/Memyrinth.git
+cd Memyrinth
 
 # Build the game
 python -m multilingualprogramming build-ui-bundle memyrinth_fr.multi --lang fr --out-dir _build

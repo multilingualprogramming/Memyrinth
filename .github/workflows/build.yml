@@ -24,7 +24,7 @@ jobs:
       - name: Checkout multilingualprogramming
         uses: actions/checkout@v4
         with:
-          repository: johnsamuelwrites/multilingual
+          repository: multilingualprogramming/multilingual
           path: multilingual
 
       - name: Setup Python
